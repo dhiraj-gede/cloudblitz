@@ -44,24 +44,7 @@ check_protected_branch
 
 # Check for secrets and sensitive data (basic patterns)
 echo "🔐 Checking for secrets and sensitive data..."
-if git diff --cached -p | grep -E "password\s*[=:]\s*['\"].+['\"]|secret\s*[=:]\s*['\"].+['\"]|api_key\s*[=:]\s*['\"].+['\"]" > /dev/null 2>&1; then
-  echo "❌ Potential secrets detected in code changes! Please review."
-  echo "If this is intentional, consider using environment variables."
-  exit 1
-fi
-
-# Check for large files
-echo "📦 Checking for large files..."
-for file in $(git diff --cached --name-only); do
-  if [ -f "$file" ]; then
-    size=$(wc -c < "$file" 2>/dev/null || echo 0)
-    if [ $size -gt 1048576 ]; then  # 1MB
-      echo "❌ Large file detected: $file ($(($size/1024))KB)"
-      echo "Consider using Git LFS for large files."
-      exit 1
-    fi
-  fi
-done
+node Server/scripts/secret-check.js
 
 # Run Client checks
 if [ -n "$STAGED_CLIENT_FILES" ]; then

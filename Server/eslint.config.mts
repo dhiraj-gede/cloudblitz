@@ -10,7 +10,15 @@ export default tseslint.config(
   prettier,
   {
     files: ['src/**/*.{ts,js,mjs,cjs,mts,cts}'],
-    ignores: ['dist/**', 'node_modules/**', '**/*.json', '**/*.jsonc', '**/*.md', 'src/**/*.test.ts', 'src/**/*.spec.ts'],
+    ignores: [
+      'dist/**',
+      'node_modules/**',
+      '**/*.json',
+      '**/*.jsonc',
+      '**/*.md',
+      'src/**/*.test.ts',
+      'src/**/*.spec.ts',
+    ],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -25,7 +33,10 @@ export default tseslint.config(
     },
     rules: {
       // TypeScript specific rules
-      '@typescript-eslint/no-unused-vars': ['warn', { 'argsIgnorePattern': '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_' },
+      ],
       '@typescript-eslint/no-explicit-any': 'warn',
     },
   },
@@ -48,6 +59,20 @@ export default tseslint.config(
       '@typescript-eslint/no-explicit-any': 'off',
     },
   },
+  // Add this new config for script files
+  {
+    files: ['scripts/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: { ...globals.node },
+    },
+    rules: {
+      'no-console': 'off',
+      'no-undef': 'off',
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
   {
     files: ['**/*.md'],
     plugins: { markdown },
@@ -58,6 +83,13 @@ export default tseslint.config(
   },
   // Global ignores for all configs
   {
-    ignores: ['**/*.json', '**/*.jsonc', 'package*.json', 'tsconfig*.json', 'node_modules/**', 'dist/**'],
+    ignores: [
+      '**/*.json',
+      '**/*.jsonc',
+      'package*.json',
+      'tsconfig*.json',
+      'node_modules/**',
+      'dist/**',
+    ],
   }
 );

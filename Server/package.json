@@ -4,16 +4,17 @@
   "description": "CloudBlitz Enquiry Management System - Backend API",
   "main": "dist/app.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/app-simple.ts",
+    "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
     "build": "tsc",
     "start": "node dist/app.js",
     "lint": "eslint src/**/*.{ts,js,mjs,cjs,mts,cts}",
     "lint:fix": "eslint src/**/*.{ts,js,mjs,cjs,mts,cts} --fix",
     "format": "prettier --write src/**/*.{ts,js,mjs,cjs,mts,cts,json,md}",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "type-check": "tsc --noEmit",
+    "test": "cross-env NODE_ENV=test jest",
+    "test:watch": "cross-env NODE_ENV=test jest --watch",
+    "test:coverage": "cross-env NODE_ENV=test jest --coverage",
+    "type-check": "tsc --project tsconfig.json --noEmit",
+    "type-check:staged": "node scripts/type-check-staged.js",
     "security:audit": "npm audit --audit-level moderate",
     "security:deps": "npm list --depth=0",
     "prepare": "husky"
@@ -40,6 +41,7 @@
     "@types/supertest": "^2.0.15",
     "@typescript-eslint/eslint-plugin": "^8.44.0",
     "@typescript-eslint/parser": "^8.44.0",
+    "cross-env": "^10.0.0",
     "eslint": "^9.36.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-jsonc": "^2.20.1",
@@ -76,7 +78,7 @@
     "src/**/*.{ts,js,mjs,cjs,mts,cts}": [
       "eslint --fix --max-warnings 0",
       "prettier --write",
-      "npm run type-check"
+      "cross-env NODE_ENV=test npm run type-check:staged"
     ],
     "**/*.{json,md,yml,yaml}": [
       "prettier --write"
