@@ -7,17 +7,17 @@ interface ProtectedRouteProps {
   fallback?: ReactNode;
 }
 
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
-  children, 
-  roles, 
-  fallback = <div>Access denied</div> 
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+  children,
+  roles,
+  fallback = <div>Access denied</div>,
 }) => {
   const { isAuthenticated, hasRole, isLoading } = useAuth();
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-muted-foreground">Loading...</div>
+      <div className='flex items-center justify-center min-h-screen'>
+        <div className='text-muted-foreground'>Loading...</div>
       </div>
     );
   }

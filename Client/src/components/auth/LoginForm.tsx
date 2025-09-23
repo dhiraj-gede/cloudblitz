@@ -11,7 +11,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegis
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,70 +30,70 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegis
   };
 
   return (
-    <div className="w-full max-w-md mx-auto space-y-6">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold text-foreground">Sign In</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
+    <div className='w-full max-w-md mx-auto space-y-6'>
+      <div className='text-center'>
+        <h2 className='text-2xl font-bold text-foreground'>Sign In</h2>
+        <p className='mt-2 text-sm text-muted-foreground'>
           Enter your credentials to access your account
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className='space-y-4'>
         {error && (
-          <div className="p-3 text-sm text-destructive-foreground bg-destructive/10 border border-destructive/20 rounded-md">
+          <div className='p-3 text-sm text-destructive-foreground bg-destructive/10 border border-destructive/20 rounded-md'>
             {error}
           </div>
         )}
 
-        <div className="space-y-2">
-          <label htmlFor="email" className="text-sm font-medium text-foreground">
+        <div className='space-y-2'>
+          <label htmlFor='email' className='text-sm font-medium text-foreground'>
             Email
           </label>
           <input
-            id="email"
-            type="email"
+            id='email'
+            type='email'
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full px-3 py-2 text-sm border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
-            placeholder="Enter your email"
+            className='w-full px-3 py-2 text-sm border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent'
+            placeholder='Enter your email'
             disabled={isSubmitting}
           />
         </div>
 
-        <div className="space-y-2">
-          <label htmlFor="password" className="text-sm font-medium text-foreground">
+        <div className='space-y-2'>
+          <label htmlFor='password' className='text-sm font-medium text-foreground'>
             Password
           </label>
           <input
-            id="password"
-            type="password"
+            id='password'
+            type='password'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full px-3 py-2 text-sm border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
-            placeholder="Enter your password"
+            className='w-full px-3 py-2 text-sm border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent'
+            placeholder='Enter your password'
             disabled={isSubmitting}
           />
         </div>
 
         <button
-          type="submit"
+          type='submit'
           disabled={isSubmitting}
-          className="w-full px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className='w-full px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
         >
           {isSubmitting ? 'Signing in...' : 'Sign In'}
         </button>
       </form>
 
       {onSwitchToRegister && (
-        <div className="text-center">
-          <p className="text-sm text-muted-foreground">
+        <div className='text-center'>
+          <p className='text-sm text-muted-foreground'>
             Don't have an account?{' '}
             <button
-              type="button"
+              type='button'
               onClick={onSwitchToRegister}
-              className="font-medium text-primary hover:text-primary/90"
+              className='font-medium text-primary hover:text-primary/90'
             >
               Create one here
             </button>

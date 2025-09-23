@@ -6,8 +6,8 @@ export const AuthPage: React.FC = () => {
   const [isLoginMode, setIsLoginMode] = useState(true);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="w-full max-w-md p-6">
+    <div className='min-h-screen flex items-center justify-center bg-background'>
+      <div className='w-full max-w-md p-6'>
         {isLoginMode ? (
           <LoginForm
             onSuccess={() => {

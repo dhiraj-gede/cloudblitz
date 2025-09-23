@@ -2,7 +2,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000
 
 export const api = {
   baseURL: API_BASE_URL,
-  
+
   // Helper function to get auth headers
   getAuthHeaders(): HeadersInit {
     const token = localStorage.getItem('token');
@@ -13,12 +13,9 @@ export const api = {
   },
 
   // Generic API call function
-  async call<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
+  async call<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
-    
+
     const response = await fetch(url, {
       headers: this.getAuthHeaders(),
       ...options,
