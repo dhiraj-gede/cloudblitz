@@ -1,0 +1,9 @@
+{
+  "Server/src/**/*.{js,jsx,ts,tsx}": [
+    "bash -c 'cd Server && npx eslint src --fix'",
+    "npx prettier --write"
+  ],
+  "Server/**/*.{json,md,yml,yaml}": [
+    "npx prettier --write"
+  ]
+}
