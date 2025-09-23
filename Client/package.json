@@ -13,6 +13,11 @@
     "format": "prettier --write 'src/**/*.{ts,tsx,js,jsx,json,css,md}'",
     "format:check": "prettier --check 'src/**/*.{ts,tsx,js,jsx,json,css,md}'",
     "type-check": "tsc --noEmit",
+    "test": "echo 'No tests yet - skipping'",
+    "test:coverage": "echo 'No tests yet - skipping'",
+    "security:audit": "npm audit --audit-level moderate",
+    "security:deps": "npm list --depth=0",
+    "bundle:analyze": "npm run build && npx vite-bundle-analyzer dist",
     "prepare": "husky"
   },
   "dependencies": {
@@ -40,6 +45,7 @@
     "eslint": "^9.36.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
+    "eslint-plugin-security": "^3.0.1",
     "globals": "^16.4.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.0",
@@ -52,11 +58,18 @@
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
-      "eslint --fix",
-      "prettier --write"
+      "eslint --fix --max-warnings 0",
+      "prettier --write",
+      "npm run type-check"
     ],
     "*.{json,css,md}": [
       "prettier --write"
+    ],
+    "src/**/*.{ts,tsx}": [
+      "bash -c 'echo \"🔍 Running security checks...\"'",
+      "npm audit --audit-level moderate",
+      "bash -c 'echo \"🧪 Running tests related to staged files...\"'",
+      "npm test -- --findRelatedTests --passWithNoTests"
     ]
   }
 }
