@@ -2,6 +2,7 @@ import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import { setupSecurity, authRateLimit } from './middlewares/security';
 
 // Load environment variables
 dotenv.config();
@@ -14,12 +15,16 @@ const PORT = process.env.PORT || 5000;
 const corsOptions = {
   origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
 };
 
-// Middleware
+// Basic middleware
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+// Apply security middleware
+setupSecurity(app);
 
 // Health check endpoint
 app.get('/api/health', (req: Request, res: Response) => {
@@ -31,7 +36,10 @@ app.get('/api/health', (req: Request, res: Response) => {
   });
 });
 
-// API routes placeholder
+// Import routes
+import authRoutes from './routes/auth.routes';
+
+// API root endpoint
 app.get('/api', (req: Request, res: Response) => {
   res.status(200).json({
     message: 'Welcome to CloudBlitz Enquiry Management API',
@@ -44,6 +52,9 @@ app.get('/api', (req: Request, res: Response) => {
     },
   });
 });
+
+// Mount route handlers with rate limiting for auth routes
+app.use('/api/auth', authRateLimit, authRoutes);
 
 // 404 handler - removed for now due to Express routing issue
 

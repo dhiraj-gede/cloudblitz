@@ -1,7 +1,7 @@
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
-import { Express } from 'express';
+import { Application } from 'express';
 
 // Rate limiting configurations
 export const createRateLimiter = (windowMs: number, max: number, message?: string) => {
@@ -32,7 +32,7 @@ export const authRateLimit = createRateLimiter(
 );
 
 // Security middleware setup
-export const setupSecurity = (app: Express): void => {
+export const setupSecurity = (app: Application): void => {
   // Helmet for security headers
   app.use(helmet({
     crossOriginEmbedderPolicy: false,

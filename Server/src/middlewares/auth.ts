@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
 import { User, IUser } from '../models/User';
+import { verifyAccessToken } from '../lib/jwt';
 
 export interface AuthRequest extends Request {
   user?: IUser;
@@ -28,16 +28,15 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
       return;
     }
 
-    const jwtSecret = process.env.JWT_SECRET;
-    if (!jwtSecret) {
-      res.status(500).json({
+    const decoded = verifyAccessToken(token);
+    if (!decoded) {
+      res.status(401).json({
         status: 'error',
-        message: 'Server configuration error.'
+        message: 'Access denied. Invalid token.'
       });
       return;
     }
-
-    const decoded = jwt.verify(token, jwtSecret) as { userId: string };
+    
     const user = await User.findById(decoded.userId).select('+password');
     
     if (!user || !user.isActive) {
@@ -51,17 +50,10 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
     req.user = user;
     next();
   } catch (error) {
-    if (error instanceof jwt.JsonWebTokenError) {
-      res.status(401).json({
-        status: 'error',
-        message: 'Access denied. Invalid token.'
-      });
-      return;
-    }
-    
     res.status(500).json({
       status: 'error',
-      message: 'Server error during authentication.'
+      message: 'Server error during authentication.',
+      error: process.env.NODE_ENV !== 'production' ? String(error) : undefined
     });
   }
 };
