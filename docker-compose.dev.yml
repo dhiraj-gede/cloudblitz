@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  # MongoDB Database for Development
+  mongodb-dev:
+    image: mongo:7.0
+    container_name: cloudblitz-mongodb-dev
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: devpassword
+      MONGO_INITDB_DATABASE: cloudblitz_dev
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_dev_data:/data/db
+    networks:
+      - cloudblitz-dev-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/cloudblitz_dev --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Backend API for Development (with hot reload)
+  backend-dev:
+    build:
+      context: ./Server
+      dockerfile: Dockerfile.dev
+    container_name: cloudblitz-backend-dev
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 5000
+      MONGODB_URI: mongodb://admin:devpassword@mongodb-dev:27017/cloudblitz_dev?authSource=admin
+      JWT_SECRET: dev-jwt-secret-key
+      JWT_EXPIRES_IN: 7d
+      CORS_ORIGIN: http://localhost:3000
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./Server:/app
+      - /app/node_modules
+    networks:
+      - cloudblitz-dev-network
+    depends_on:
+      mongodb-dev:
+        condition: service_healthy
+    command: npm run dev
+
+  # Frontend Web App for Development (with hot reload)
+  frontend-dev:
+    build:
+      context: ./Client
+      dockerfile: Dockerfile.dev
+    container_name: cloudblitz-frontend-dev
+    restart: unless-stopped
+    environment:
+      VITE_API_BASE_URL: http://localhost:5000/api
+      VITE_APP_NAME: CloudBlitz
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./Client:/app
+      - /app/node_modules
+    networks:
+      - cloudblitz-dev-network
+    depends_on:
+      - backend-dev
+    command: npm run dev
+
+volumes:
+  mongodb_dev_data:
+    driver: local
+
+networks:
+  cloudblitz-dev-network:
+    driver: bridge

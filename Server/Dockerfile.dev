@@ -1,0 +1,30 @@
+# Development Dockerfile for Node.js backend with hot reload
+FROM node:18-alpine
+
+# Install dumb-init
+RUN apk add --no-cache dumb-init
+
+# Create app directory
+WORKDIR /app
+
+# Create app user
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nodejs -u 1001
+
+# Copy package files
+COPY package*.json ./
+
+# Install all dependencies (including dev dependencies)
+RUN npm ci
+
+# Change ownership of the working directory
+RUN chown -R nodejs:nodejs /app
+
+# Switch to nodejs user
+USER nodejs
+
+# Expose port
+EXPOSE 5000
+
+# Start the application in development mode
+CMD ["dumb-init", "npm", "run", "dev"]
