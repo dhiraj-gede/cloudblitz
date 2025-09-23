@@ -1,0 +1,27 @@
+{
+  "name": "cloudblitz-monorepo",
+  "version": "1.0.0",
+  "description": "CloudBlitz Enquiry Management System - Monorepo",
+  "private": true,
+  "workspaces": [
+    "Client",
+    "Server"
+  ],
+  "scripts": {
+    "install:all": "npm install && cd Client && npm install && cd ../Server && npm install",
+    "dev:client": "cd Client && npm run dev",
+    "dev:server": "cd Server && npm run dev",
+    "build:client": "cd Client && npm run build",
+    "build:server": "cd Server && npm run build",
+    "lint:client": "cd Client && npm run lint",
+    "lint:server": "cd Server && npm run lint",
+    "format:client": "cd Client && npm run format",
+    "format:server": "cd Server && npm run format",
+    "test:client": "cd Client && npm test",
+    "test:server": "cd Server && npm test",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}
