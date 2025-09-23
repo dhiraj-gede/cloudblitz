@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken';
 import { IUser } from '../models/User';
 
 interface TokenPayload {
@@ -20,14 +20,12 @@ export const generateAccessToken = (user: IUser): TokenResponse => {
   if (!secret) {
     throw new Error('JWT_SECRET is not defined in environment variables');
   }
-  
+
   const expiresIn = parseInt(process.env.JWT_ACCESS_EXPIRES || '3600', 10); // 1 hour default
 
-  const token = jwt.sign(
-    { userId: user.id } as TokenPayload,
-    secret,
-    { expiresIn }
-  );
+  const token = jwt.sign({ userId: user.id } as TokenPayload, secret, {
+    expiresIn,
+  });
 
   return {
     token,
@@ -43,16 +41,16 @@ export const generateAccessToken = (user: IUser): TokenResponse => {
 export const generateRefreshToken = (user: IUser): TokenResponse => {
   const secret = process.env.JWT_REFRESH_SECRET;
   if (!secret) {
-    throw new Error('JWT_REFRESH_SECRET is not defined in environment variables');
+    throw new Error(
+      'JWT_REFRESH_SECRET is not defined in environment variables'
+    );
   }
-  
+
   const expiresIn = parseInt(process.env.JWT_REFRESH_EXPIRES || '604800', 10); // 7 days default
-  
-  const token = jwt.sign(
-    { userId: user.id } as TokenPayload,
-    secret,
-    { expiresIn }
-  );
+
+  const token = jwt.sign({ userId: user.id } as TokenPayload, secret, {
+    expiresIn,
+  });
 
   return {
     token,
@@ -72,7 +70,7 @@ export const verifyAccessToken = (token: string): TokenPayload | null => {
       console.error('JWT_SECRET is not defined in environment variables');
       return null;
     }
-    
+
     const decoded = jwt.verify(token, secret) as TokenPayload;
     return decoded;
   } catch {
@@ -89,10 +87,12 @@ export const verifyRefreshToken = (token: string): TokenPayload | null => {
   try {
     const secret = process.env.JWT_REFRESH_SECRET;
     if (!secret) {
-      console.error('JWT_REFRESH_SECRET is not defined in environment variables');
+      console.error(
+        'JWT_REFRESH_SECRET is not defined in environment variables'
+      );
       return null;
     }
-    
+
     const decoded = jwt.verify(token, secret) as TokenPayload;
     return decoded;
   } catch {
