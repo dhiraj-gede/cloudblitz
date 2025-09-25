@@ -5,6 +5,8 @@ import mongoose from 'mongoose';
 import { setupSecurity, authRateLimit } from './middlewares/security';
 import * as path from 'path';
 import * as fs from 'fs';
+import authRoutes from './routes/auth.routes';
+import userRoutes from './routes/user.routes';
 
 // Load environment variables based on NODE_ENV
 const envFile = process.env.NODE_ENV === 'test' ? '.env.test' : '.env';
@@ -46,18 +48,7 @@ if (process.env.NODE_ENV !== 'test') {
   console.log('🧪 Running with minimal security for testing');
 }
 
-// Health check endpoint
-app.get('/api/health', (req: Request, res: Response) => {
-  res.status(200).json({
-    status: 'OK',
-    message: 'CloudBlitz API is running',
-    timestamp: new Date().toISOString(),
-    version: '1.0.0',
-  });
-});
-
 // Import routes
-import authRoutes from './routes/auth.routes';
 
 // API root endpoint
 app.get('/api', (req: Request, res: Response) => {
@@ -72,13 +63,24 @@ app.get('/api', (req: Request, res: Response) => {
     },
   });
 });
+// Health check endpoint
+app.get('/api/health', (req: Request, res: Response) => {
+  res.status(200).json({
+    status: 'OK',
+    message: 'CloudBlitz API is running',
+    timestamp: new Date().toISOString(),
+    version: '1.0.0',
+  });
+});
 
 // Mount route handlers with rate limiting for auth routes based on environment
 if (process.env.NODE_ENV === 'test') {
   // Skip rate limiting in test environment
   app.use('/api/auth', authRoutes);
+  app.use('/api/users', userRoutes);
 } else {
   app.use('/api/auth', authRateLimit, authRoutes);
+  app.use('/api/users', authRateLimit, userRoutes);
 }
 
 // 404 handler - removed for now due to Express routing issue
