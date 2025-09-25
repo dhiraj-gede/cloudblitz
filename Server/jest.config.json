@@ -7,7 +7,7 @@
     "^.+\\.ts$": [
       "ts-jest",
       {
-        "tsconfig": "tsconfig.test.json"
+        "tsconfig": "tsconfig.json"
       }
     ]
   },
@@ -24,5 +24,6 @@
   "testTimeout": 10000,
   "clearMocks": true,
   "restoreMocks": true,
-  "verbose": true
+  "verbose": true,
+  "maxWorkers": 1
 }
