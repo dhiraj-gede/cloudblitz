@@ -1,10 +1,26 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import { setupSecurity, authRateLimit } from './middlewares/security';
+import * as path from 'path';
+import * as fs from 'fs';
 
-// Load environment variables
-dotenv.config();
+// Load environment variables based on NODE_ENV
+const envFile = process.env.NODE_ENV === 'test' ? '.env.test' : '.env';
+const envPath = path.resolve(process.cwd(), envFile);
+
+// Check if env file exists
+if (fs.existsSync(envPath)) {
+  console.log(`🌍 Loading environment from ${envFile}`);
+  dotenv.config({ path: envPath });
+} else {
+  console.log(`⚠️ ${envFile} not found, using default .env file`);
+  dotenv.config();
+}
+
+// Log current environment
+console.log(`🚀 Running in ${process.env.NODE_ENV} mode`);
 
 // Create Express application
 const app: Application = express();
@@ -12,14 +28,23 @@ const PORT = process.env.PORT || 5000;
 
 // CORS configuration
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: process.env.CORS_ORIGIN,
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
 };
 
-// Middleware
+// Basic middleware
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+// Apply security middleware conditionally
+if (process.env.NODE_ENV !== 'test') {
+  setupSecurity(app);
+  console.log('🛡️ Full security middleware applied');
+} else {
+  console.log('🧪 Running with minimal security for testing');
+}
 
 // Health check endpoint
 app.get('/api/health', (req: Request, res: Response) => {
@@ -31,7 +56,10 @@ app.get('/api/health', (req: Request, res: Response) => {
   });
 });
 
-// API routes placeholder
+// Import routes
+import authRoutes from './routes/auth.routes';
+
+// API root endpoint
 app.get('/api', (req: Request, res: Response) => {
   res.status(200).json({
     message: 'Welcome to CloudBlitz Enquiry Management API',
@@ -45,6 +73,14 @@ app.get('/api', (req: Request, res: Response) => {
   });
 });
 
+// Mount route handlers with rate limiting for auth routes based on environment
+if (process.env.NODE_ENV === 'test') {
+  // Skip rate limiting in test environment
+  app.use('/api/auth', authRoutes);
+} else {
+  app.use('/api/auth', authRateLimit, authRoutes);
+}
+
 // 404 handler - removed for now due to Express routing issue
 
 // Global error handler
@@ -52,7 +88,10 @@ app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
   console.error('Error:', err.message);
   res.status(500).json({
     status: 'error',
-    message: process.env.NODE_ENV === 'production' ? 'Internal server error' : err.message,
+    message:
+      process.env.NODE_ENV === 'production'
+        ? 'Internal server error'
+        : err.message,
     ...(process.env.NODE_ENV !== 'production' && { stack: err.stack }),
   });
 });
@@ -60,12 +99,28 @@ app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
 // Database connection
 const connectDB = async (): Promise<void> => {
   try {
-    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/cloudblitz';
+    // Return if already connected
+    if (mongoose.connection.readyState !== 0) {
+      return;
+    }
+
+    const mongoUri =
+      process.env.MONGODB_URI || 'mongodb://localhost:27017/cloudblitz';
     await mongoose.connect(mongoUri);
-    console.log('✅ MongoDB connected successfully');
+
+    // Log connection details based on environment
+    if (process.env.NODE_ENV === 'test') {
+      console.log(`✅ Test MongoDB connected at: ${mongoUri}`);
+    } else {
+      console.log('✅ MongoDB connected successfully');
+    }
   } catch (error) {
     console.error('❌ MongoDB connection failed:', error);
-    process.exit(1);
+    if (process.env.NODE_ENV !== 'test') {
+      process.exit(1); // Only exit in non-test environments
+    } else {
+      throw error; // In test environment, throw the error to be caught by the test runner
+    }
   }
 };
 
@@ -73,10 +128,10 @@ const connectDB = async (): Promise<void> => {
 const startServer = async (): Promise<void> => {
   try {
     await connectDB();
-    
+
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
-      console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`📊 Environment: ${process.env.NODE_ENV}`);
       console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
     });
   } catch (error) {
@@ -97,7 +152,9 @@ process.on('uncaughtException', (err: Error) => {
   process.exit(1);
 });
 
-// Start the server
-startServer();
+// Start the server only if this is not a test environment
+if (process.env.NODE_ENV !== 'test') {
+  startServer();
+}
 
 export default app;

@@ -1,8 +1,6 @@
-import request from 'supertest';
-
-// Create a simple test app without starting the server
-import express, { Application, Request, Response } from 'express';
-import cors from 'cors';
+import request from 'supertest'; // Use default import for supertest
+import express, { Application, Request, Response } from 'express'; // Default import for express
+import cors from 'cors'; // Use default import for cors
 
 const testApp: Application = express();
 
@@ -39,7 +37,10 @@ describe('API Health Check', () => {
       .expect(200);
 
     expect(response.body).toHaveProperty('status', 'OK');
-    expect(response.body).toHaveProperty('message', 'CloudBlitz API is running');
+    expect(response.body).toHaveProperty(
+      'message',
+      'CloudBlitz API is running'
+    );
     expect(response.body).toHaveProperty('timestamp');
     expect(response.body).toHaveProperty('version', '1.0.0');
   });
@@ -50,14 +51,15 @@ describe('API Health Check', () => {
       .expect('Content-Type', /json/)
       .expect(200);
 
-    expect(response.body).toHaveProperty('message', 'Welcome to CloudBlitz Enquiry Management API');
+    expect(response.body).toHaveProperty(
+      'message',
+      'Welcome to CloudBlitz Enquiry Management API'
+    );
     expect(response.body).toHaveProperty('version', '1.0.0');
     expect(response.body).toHaveProperty('endpoints');
   });
 
   test('GET /nonexistent should return 404', async () => {
-    await request(testApp)
-      .get('/nonexistent')
-      .expect(404);
+    await request(testApp).get('/nonexistent').expect(404);
   });
 });

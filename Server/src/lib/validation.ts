@@ -108,6 +108,32 @@ export const mongoIdSchema = z.object({
   id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid ID format')
 });
 
+// Auth validation schemas
+export const refreshTokenSchema = z.object({
+  refreshToken: z.string().min(1, 'Refresh token is required')
+});
+
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1, 'Current password is required'),
+  newPassword: z.string()
+    .min(6, 'Password must be at least 6 characters')
+    .max(100, 'Password cannot exceed 100 characters')
+});
+
+export const forgotPasswordSchema = z.object({
+  email: z.string()
+    .email('Please enter a valid email')
+    .toLowerCase()
+    .trim()
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1, 'Reset token is required'),
+  password: z.string()
+    .min(6, 'Password must be at least 6 characters')
+    .max(100, 'Password cannot exceed 100 characters')
+});
+
 // Types
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
@@ -116,3 +142,7 @@ export type CreateEnquiryInput = z.infer<typeof createEnquirySchema>;
 export type UpdateEnquiryInput = z.infer<typeof updateEnquirySchema>;
 export type EnquiryFilters = z.infer<typeof enquiryFiltersSchema>;
 export type MongoId = z.infer<typeof mongoIdSchema>;
+export type RefreshTokenInput = z.infer<typeof refreshTokenSchema>;
+export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;

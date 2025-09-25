@@ -2,20 +2,19 @@
   "preset": "ts-jest",
   "testEnvironment": "node",
   "roots": ["<rootDir>/src"],
-  "testMatch": [
-    "**/__tests__/**/*.test.ts",
-    "**/?(*.)+(spec|test).ts"
-  ],
+  "testMatch": ["**/__tests__/**/*.test.ts", "**/?(*.)+(spec|test).ts"],
   "transform": {
-    "^.+\\.ts$": ["ts-jest", {
-      "tsconfig": "tsconfig.test.json"
-    }]
+    "^.+\\.ts$": [
+      "ts-jest",
+      {
+        "tsconfig": "tsconfig.json"
+      }
+    ]
   },
   "collectCoverageFrom": [
     "src/**/*.ts",
     "!src/**/*.d.ts",
     "!src/app.ts",
-    "!src/app-simple.ts",
     "!src/__tests__/**"
   ],
   "coverageDirectory": "coverage",
@@ -25,5 +24,6 @@
   "testTimeout": 10000,
   "clearMocks": true,
   "restoreMocks": true,
-  "verbose": true
+  "verbose": true,
+  "maxWorkers": 1
 }
