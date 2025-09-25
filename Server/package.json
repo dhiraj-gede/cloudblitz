@@ -87,7 +87,8 @@
       "prettier --write"
     ],
     "src/**/*.ts": [
-      "npm audit --audit-level moderate"
+      "npm audit --audit-level moderate",
+      "npm test -- --findRelatedTests --passWithNoTests"
     ]
   }
 }
