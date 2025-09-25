@@ -1,9 +1,9 @@
 declare global {
   namespace Express {
     interface Request {
-      sanitizedQuery?: unknown;
-      sanitizedBody?: unknown;
-      sanitizedParams?: unknown;
+      sanitizedQuery?: Request['query'];
+      sanitizedBody?: Request['body'];
+      sanitizedParams?: Request['params'];
     }
   }
 }

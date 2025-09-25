@@ -6,6 +6,7 @@ import { setupSecurity, authRateLimit } from './middlewares/security';
 import * as path from 'path';
 import * as fs from 'fs';
 import authRoutes from './routes/auth.routes';
+import enquiryRoutes from './routes/enquiry.routes';
 import userRoutes from './routes/user.routes';
 
 // Load environment variables based on NODE_ENV
@@ -77,9 +78,11 @@ app.get('/api/health', (req: Request, res: Response) => {
 if (process.env.NODE_ENV === 'test') {
   // Skip rate limiting in test environment
   app.use('/api/auth', authRoutes);
+  app.use('/api/enquiries', enquiryRoutes);
   app.use('/api/users', userRoutes);
 } else {
   app.use('/api/auth', authRateLimit, authRoutes);
+  app.use('/api/enquiries', authRateLimit, enquiryRoutes);
   app.use('/api/users', authRateLimit, userRoutes);
 }
 

@@ -2,6 +2,7 @@
 import mongoose from 'mongoose';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
+import { jest } from '@jest/globals';
 
 // Set test environment
 process.env.NODE_ENV = 'test';
@@ -20,12 +21,9 @@ beforeAll(async () => {
         `🧪 Test setup connected to MongoDB at: ${process.env.MONGODB_URI}`
       );
 
-      // Clear all collections before testing
-      const collections = mongoose.connection.collections;
-      for (const key in collections) {
-        await collections[key].deleteMany({});
-      }
-      console.log('🧹 All collections cleared for testing');
+      // Drop the entire database to ensure a clean slate
+      await mongoose.connection.dropDatabase();
+      console.log('🧹 Database dropped for testing');
     } catch (error) {
       console.error('❌ Failed to connect to MongoDB for testing:', error);
       throw error; // Re-throw to fail tests if connection fails
