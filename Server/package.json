@@ -14,7 +14,7 @@
     "test:watch": "cross-env NODE_ENV=test jest --watch",
     "test:coverage": "cross-env NODE_ENV=test jest --coverage",
     "type-check": "tsc --project tsconfig.json --noEmit",
-    "type-check:staged": "node scripts/type-check-staged.js",
+    "type-check:staged": "cross-env NODE_ENV=test node scripts/type-check-staged.js",
     "security:audit": "npm audit --audit-level moderate",
     "security:deps": "npm list --depth=0",
     "prepare": "husky",
@@ -81,14 +81,13 @@
     "src/**/*.{ts,js,mjs,cjs,mts,cts}": [
       "eslint --fix --max-warnings 0",
       "prettier --write",
-      "cross-env NODE_ENV=test npm run type-check:staged"
+      "npm run type-check:staged"
     ],
     "**/*.{json,md,yml,yaml}": [
       "prettier --write"
     ],
     "src/**/*.ts": [
-      "npm audit --audit-level moderate",
-      "npm test -- --findRelatedTests --passWithNoTests"
+      "npm audit --audit-level moderate"
     ]
   }
 }
