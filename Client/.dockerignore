@@ -1,0 +1,52 @@
+# Dependencies
+node_modules
+npm-debug.log*
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Production build (will be copied separately)
+dist
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Logs
+logs
+*.log
+
+# Coverage directory
+coverage
+
+# IDE
+.vscode
+.idea
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Development tools (keeping vite.config.ts for build)
+.eslintrc*
+.prettierrc*
+
+# Documentation
+README.md
+
+# Source maps (optional)
+*.map
