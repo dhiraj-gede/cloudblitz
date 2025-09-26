@@ -49,6 +49,42 @@ export const api = {
   },
 
   delete<T>(endpoint: string): Promise<T> {
-    return this.call<T>(endpoint, { method: 'DELETE' });
+    return this.call<T>(endpoint, {
+      method: 'DELETE',
+    });
   },
+};
+
+// Enquiries API
+import type { Enquiry, EnquiryFilters, PaginatedResponse, ApiResponse } from '../types/index.ts';
+
+export const fetchEnquiries = async (filters?: EnquiryFilters): Promise<Enquiry[]> => {
+  // Build query string from filters
+  const queryParams = new URLSearchParams();
+  if (filters?.status) queryParams.append('status', filters.status);
+  if (filters?.assignedTo) queryParams.append('assignedTo', filters.assignedTo);
+  if (filters?.search) queryParams.append('search', filters.search);
+
+  const query = queryParams.toString() ? `?${queryParams.toString()}` : '';
+
+  const response = await api.get<PaginatedResponse<Enquiry>>(`/enquiries${query}`);
+  return response.data || [];
+};
+
+export const fetchEnquiryById = async (id: string): Promise<Enquiry> => {
+  return api.get<ApiResponse<Enquiry>>(`/enquiries/${id}`).then((res) => res.data!);
+};
+
+export const createEnquiry = async (
+  data: Omit<Enquiry, 'id' | 'createdAt' | 'updatedAt'>
+): Promise<Enquiry> => {
+  return api.post<ApiResponse<Enquiry>>('/enquiries', data).then((res) => res.data!);
+};
+
+export const updateEnquiry = async (id: string, data: Partial<Enquiry>): Promise<Enquiry> => {
+  return api.put<ApiResponse<Enquiry>>(`/enquiries/${id}`, data).then((res) => res.data!);
+};
+
+export const deleteEnquiry = async (id: string): Promise<void> => {
+  await api.delete<ApiResponse<null>>(`/enquiries/${id}`);
 };

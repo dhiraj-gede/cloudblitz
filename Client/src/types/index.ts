@@ -24,8 +24,9 @@ export interface Enquiry {
 }
 
 export interface AuthResponse {
-  token: string;
-  user: User;
+  data: { accessToken: string; user: User };
+  message: string;
+  status: 'success' | 'error';
 }
 
 export interface ApiResponse<T> {

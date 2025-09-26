@@ -1,7 +1,9 @@
 import { AuthProvider } from './contexts/AuthContext.tsx';
-import { useAuth } from './hooks/useAuth';
-import { AuthPage } from './components/auth/AuthPage';
+import { useAuth } from './hooks/useAuth.ts';
+import { AuthPage } from './components/auth/AuthPage.tsx';
+import { Dashboard } from './components/dashboard/Dashboard.tsx';
 import './App.css';
+import { ToastProvider } from './contexts/ToastContext.tsx';
 
 function AppContent() {
   const { isAuthenticated, user, logout, isLoading } = useAuth();
@@ -20,7 +22,7 @@ function AppContent() {
 
   return (
     <div className='min-h-screen bg-background'>
-      <nav className='border-b border-border bg-card'>
+      <nav className='border-b border-[hsl(var(--border))] bg-card'>
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
           <div className='flex justify-between h-16'>
             <div className='flex items-center'>
@@ -41,12 +43,7 @@ function AppContent() {
 
       <main className='max-w-7xl mx-auto py-6 sm:px-6 lg:px-8'>
         <div className='px-4 py-6 sm:px-0'>
-          <div className='border-4 border-dashed border-border rounded-lg h-96 flex items-center justify-center'>
-            <div className='text-center'>
-              <h2 className='text-2xl font-bold text-foreground mb-4'>Enquiry Management System</h2>
-              <p className='text-muted-foreground'>Dashboard coming soon...</p>
-            </div>
-          </div>
+          <Dashboard />
         </div>
       </main>
     </div>
@@ -56,7 +53,9 @@ function AppContent() {
 function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <ToastProvider>
+        <AppContent />
+      </ToastProvider>
     </AuthProvider>
   );
 }

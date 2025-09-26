@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { LoginForm } from './LoginForm';
-import { RegisterForm } from './RegisterForm';
+import { LoginForm } from './LoginForm.tsx';
+import { RegisterForm } from './RegisterForm.tsx';
 
 export const AuthPage: React.FC = () => {
   const [isLoginMode, setIsLoginMode] = useState(true);

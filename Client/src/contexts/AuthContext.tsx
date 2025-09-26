@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import { api } from '../services/api';
-import type { User, AuthResponse } from '../types';
-import { AuthContext } from './AuthContext';
-import type { AuthContextType } from './AuthContext';
+import { api } from '../services/api.ts';
+import type { User, AuthResponse } from '../types/index.ts';
+import { AuthContext } from './auth-contxt.ts';
+import type { AuthContextType } from './auth-contxt.ts';
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -13,7 +13,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
   const isAuthenticated = !!user && !!token;
 
   useEffect(() => {
@@ -41,7 +40,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoading(true);
       const response = await api.post<AuthResponse>('/auth/login', { email, password });
 
-      const { token: newToken, user: newUser } = response;
+      const { accessToken: newToken, user: newUser } = response.data;
 
       // Store in localStorage
       localStorage.setItem('token', newToken);
@@ -63,7 +62,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoading(true);
       const response = await api.post<AuthResponse>('/auth/register', { name, email, password });
 
-      const { token: newToken, user: newUser } = response;
+      const { accessToken: newToken, user: newUser } = response.data;
 
       // Store in localStorage
       localStorage.setItem('token', newToken);
