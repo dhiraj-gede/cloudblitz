@@ -9,6 +9,7 @@ import {
   UpdateEnquiryInput,
   EnquiryFilters,
 } from '../../lib/validation';
+import { User } from '../../models/User';
 import mongoose from 'mongoose';
 
 export class EnquiryController {
@@ -64,6 +65,43 @@ export class EnquiryController {
       // Add the creator if authenticated
       if (req.user) {
         enquiryData.createdBy = req.user._id;
+      }
+
+      // Round robin assignment logic
+      if (enquiryData.autoAssign) {
+        // Only assign to active staff/admin
+        console.log('Auto-assigning enquiry...');
+        const users = await User.find({
+          isActive: true,
+          role: { $in: ['admin', 'staff'] },
+        }).sort({ createdAt: 1 });
+        if (users.length === 0) {
+          ResponseHelper.badRequest(
+            res,
+            'No active staff/admin users available for assignment'
+          );
+          return;
+        }
+        console.log(
+          'Found users for assignment:',
+          users.map(u => u.email)
+        );
+        // Find last assigned enquiry
+        const lastEnquiry = await Enquiry.findOne({
+          assignedTo: { $in: users.map(u => u._id) },
+        }).sort({ createdAt: -1 });
+        console.log('Last assigned enquiry:', lastEnquiry);
+        let nextUser;
+        if (!lastEnquiry) {
+          nextUser = users[0];
+        } else {
+          const lastIndex = users.findIndex(
+            u => u._id.toString() === lastEnquiry.assignedTo?.toString()
+          );
+          nextUser = users[(lastIndex + 1) % users.length];
+        }
+        console.log('Assigning to user:', nextUser.email);
+        enquiryData.assignedTo = nextUser._id;
       }
 
       const enquiry = new Enquiry(enquiryData);
@@ -221,6 +259,34 @@ export class EnquiryController {
         // Regular users can only update basic details, not status or assignment
         delete updateData.status;
         delete updateData.assignedTo;
+      }
+
+      // Round robin assignment logic for update
+      if (updateData.autoAssign) {
+        const users = await User.find({
+          isActive: true,
+          role: { $in: ['admin', 'staff'] },
+        }).sort({ createdAt: 1 });
+        if (users.length === 0) {
+          ResponseHelper.badRequest(
+            res,
+            'No active staff/admin users available for assignment'
+          );
+          return;
+        }
+        const lastEnquiry = await Enquiry.findOne({
+          assignedTo: { $in: users.map(u => u._id) },
+        }).sort({ createdAt: -1 });
+        let nextUser;
+        if (!lastEnquiry) {
+          nextUser = users[0];
+        } else {
+          const lastIndex = users.findIndex(
+            u => u._id.toString() === lastEnquiry.assignedTo?.toString()
+          );
+          nextUser = users[(lastIndex + 1) % users.length];
+        }
+        updateData.assignedTo = nextUser._id;
       }
 
       // Update the enquiry

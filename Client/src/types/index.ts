@@ -16,7 +16,22 @@ export interface Enquiry {
   phone: string;
   message: string;
   status: 'new' | 'in-progress' | 'closed';
+  assignedTo?: Partial<User>;
+  autoAssign?: boolean;
+  assignedUser?: User;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string;
+}
+export interface EnquiryPayload {
+  id: string;
+  customerName: string;
+  email: string;
+  phone: string;
+  message: string;
+  status: 'new' | 'in-progress' | 'closed';
   assignedTo?: string;
+  autoAssign?: boolean;
   assignedUser?: User;
   createdAt: string;
   updatedAt: string;

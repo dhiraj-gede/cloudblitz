@@ -41,7 +41,11 @@ export const EnquiryForm: React.FC<EnquiryFormProps> = ({
       phone: enquiry?.phone || '',
       message: enquiry?.message || '',
       status: enquiry?.status || 'new',
-      assignedTo: enquiry?.assignedTo || '',
+      assignedTo: enquiry?.assignedTo || {
+        id: '',
+        name: '',
+        email: '',
+      },
     },
   });
 
@@ -87,8 +91,10 @@ export const EnquiryForm: React.FC<EnquiryFormProps> = ({
                            shadow-sm hover:border-gray-300'
               disabled={autoAssign || isSubmitting || isLoadingUsers}
             >
-              <option className='text-black' value=''>
-                Select team member...
+              <option className='text-black' value={enquiry?.assignedTo?.id || ''}>
+                {enquiry?.assignedTo?.name
+                  ? enquiry?.assignedTo?.name + ' | ' + enquiry?.assignedTo?.email
+                  : 'Select team member...'}
               </option>
               {users
                 .filter((user) => user.role !== 'user')

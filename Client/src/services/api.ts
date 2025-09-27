@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const api = {
   baseURL: API_BASE_URL,
@@ -62,6 +62,7 @@ import type {
   PaginatedResponse,
   ApiResponse,
   User,
+  EnquiryPayload,
 } from '../types/index.ts';
 
 export const fetchEnquiries = async (filters?: EnquiryFilters): Promise<Enquiry[]> => {
@@ -82,12 +83,15 @@ export const fetchEnquiryById = async (id: string): Promise<Enquiry> => {
 };
 
 export const createEnquiry = async (
-  data: Omit<Enquiry, 'id' | 'createdAt' | 'updatedAt'>
+  data: Omit<EnquiryPayload, 'id' | 'createdAt' | 'updatedAt'>
 ): Promise<Enquiry> => {
   return api.post<ApiResponse<Enquiry>>('/enquiries', data).then((res) => res.data!);
 };
 
-export const updateEnquiry = async (id: string, data: Partial<Enquiry>): Promise<Enquiry> => {
+export const updateEnquiry = async (
+  id: string,
+  data: Partial<EnquiryPayload>
+): Promise<Enquiry> => {
   return api.put<ApiResponse<Enquiry>>(`/enquiries/${id}`, data).then((res) => res.data!);
 };
 

@@ -56,6 +56,8 @@ export const createEnquirySchema = z.object({
     .trim(),
   priority: z.enum(['low', 'medium', 'high']).optional().default('medium'),
   createdBy: z.string().optional(),
+  autoAssign: z.boolean().optional(),
+  assignedTo: z.string().optional(),
 });
 
 export const updateEnquirySchema = z.object({
@@ -86,6 +88,7 @@ export const updateEnquirySchema = z.object({
   priority: z.enum(['low', 'medium', 'high']).optional(),
   assignedTo: z.string().optional(),
   notes: z.array(z.string()).optional(),
+  autoAssign: z.boolean().optional(),
 });
 
 // Query validation schemas
