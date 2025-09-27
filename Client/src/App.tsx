@@ -4,6 +4,7 @@ import { AuthPage } from './components/auth/AuthPage.tsx';
 import { Dashboard } from './components/dashboard/Dashboard.tsx';
 import './App.css';
 import { ToastProvider } from './contexts/ToastContext.tsx';
+import { UserManagement } from './components/admin/UserManagement.tsx';
 
 function AppContent() {
   const { isAuthenticated, user, logout, isLoading } = useAuth();
@@ -44,6 +45,7 @@ function AppContent() {
       <main className='max-w-7xl mx-auto py-6 sm:px-6 lg:px-8'>
         <div className='px-4 py-6 sm:px-0'>
           <Dashboard />
+          <UserManagement />
         </div>
       </main>
     </div>

@@ -56,7 +56,13 @@ export const api = {
 };
 
 // Enquiries API
-import type { Enquiry, EnquiryFilters, PaginatedResponse, ApiResponse } from '../types/index.ts';
+import type {
+  Enquiry,
+  EnquiryFilters,
+  PaginatedResponse,
+  ApiResponse,
+  User,
+} from '../types/index.ts';
 
 export const fetchEnquiries = async (filters?: EnquiryFilters): Promise<Enquiry[]> => {
   // Build query string from filters
@@ -87,4 +93,24 @@ export const updateEnquiry = async (id: string, data: Partial<Enquiry>): Promise
 
 export const deleteEnquiry = async (id: string): Promise<void> => {
   await api.delete<ApiResponse<null>>(`/enquiries/${id}`);
+};
+
+// User API
+export const fetchUsers = async (): Promise<User[]> => {
+  const response = await api.get<PaginatedResponse<User>>('/users');
+  return response.data || [];
+};
+
+export const createUser = async (
+  data: Omit<User, 'id' | 'createdAt' | 'updatedAt'>
+): Promise<User> => {
+  return api.post<ApiResponse<User>>('/users', data).then((res) => res.data!);
+};
+
+export const updateUser = async (id: string, data: Partial<User>): Promise<User> => {
+  return api.put<ApiResponse<User>>(`/users/${id}`, data).then((res) => res.data!);
+};
+
+export const deleteUser = async (id: string): Promise<void> => {
+  await api.delete<ApiResponse<null>>(`/users/${id}`);
 };
