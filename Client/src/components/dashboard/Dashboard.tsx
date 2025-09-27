@@ -21,7 +21,6 @@ export const Dashboard: React.FC = () => {
     const getEnquiries = async () => {
       setLoading(true);
       try {
-        // Fetch enquiries based on the active tab
         const statusFilter = activeTab !== 'all' ? activeTab : undefined;
         const response = await fetchEnquiries({ status: statusFilter });
         setEnquiries(response);
@@ -33,14 +32,11 @@ export const Dashboard: React.FC = () => {
         setLoading(false);
       }
     };
-
     getEnquiries();
   }, [activeTab]);
 
-  // Filter enquiries based on search query
   const filteredEnquiries = enquiries.filter((enquiry) => {
     if (!searchQuery) return true;
-
     const query = searchQuery.toLowerCase();
     return (
       enquiry.customerName.toLowerCase().includes(query) ||
@@ -50,7 +46,6 @@ export const Dashboard: React.FC = () => {
     );
   });
 
-  // Handlers for enquiry actions
   const handleViewEnquiry = (enquiry: Enquiry) => {
     setSelectedEnquiry(enquiry);
     setIsModalOpen(true);
@@ -67,7 +62,6 @@ export const Dashboard: React.FC = () => {
     ) {
       try {
         await deleteEnquiry(enquiry.id);
-        // Refresh enquiries after deletion
         const updatedEnquiries = enquiries.filter((e) => e.id !== enquiry.id);
         setEnquiries(updatedEnquiries);
         toast.success(`Enquiry from ${enquiry.customerName} deleted successfully`);
@@ -78,7 +72,6 @@ export const Dashboard: React.FC = () => {
     }
   };
 
-  // Refresh data after form submission
   const handleEnquirySuccess = async () => {
     try {
       const statusFilter = activeTab !== 'all' ? activeTab : undefined;
@@ -90,59 +83,68 @@ export const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className='space-y-6'>
-      <div className='flex justify-between items-center'>
-        <h1 className='text-2xl font-bold tracking-tight'>Enquiry Management</h1>
+    <div className='space-y-8 max-w-6xl mx-auto'>
+      <div className='flex justify-between items-center bg-card rounded-xl shadow-md p-6 border border-[hsl(var(--border))]'>
+        <h1 className='text-3xl font-extrabold tracking-tight text-foreground'>
+          Enquiry Management
+        </h1>
         <button
-          className='inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2'
+          className='inline-flex items-center justify-center rounded-lg text-base font-semibold ring-offset-background transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/80 shadow-md h-11 px-6 py-2'
           onClick={() => {
             setSelectedEnquiry(undefined);
             setIsModalOpen(true);
           }}
         >
-          New Enquiry
+          <span className='mr-2 text-lg'>+</span> New Enquiry
         </button>
       </div>
-
-      <SearchBar value={searchQuery} onChange={setSearchQuery} />
-
-      <Tabs defaultValue='all' value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value='all'>All Enquiries</TabsTrigger>
-          <TabsTrigger value='new'>New</TabsTrigger>
-          <TabsTrigger value='in-progress'>In Progress</TabsTrigger>
-          <TabsTrigger value='closed'>Closed</TabsTrigger>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className='w-full'>
+        <TabsList className='mb-6 flex gap-2'>
+          <TabsTrigger
+            value='all'
+            className='rounded-lg px-4 py-2 text-sm font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-colors'
+          >
+            All
+          </TabsTrigger>
+          <TabsTrigger
+            value='new'
+            className='rounded-lg px-4 py-2 text-sm font-medium data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-colors'
+          >
+            New
+          </TabsTrigger>
+          <TabsTrigger
+            value='in-progress'
+            className='rounded-lg px-4 py-2 text-sm font-medium data-[state=active]:bg-amber-500 data-[state=active]:text-white transition-colors'
+          >
+            In Progress
+          </TabsTrigger>
+          <TabsTrigger
+            value='closed'
+            className='rounded-lg px-4 py-2 text-sm font-medium data-[state=active]:bg-green-600 data-[state=active]:text-white transition-colors'
+          >
+            Closed
+          </TabsTrigger>
         </TabsList>
-
+        <SearchBar value={searchQuery} onChange={setSearchQuery} />
         <TabsContent value={activeTab} className='mt-6'>
-          {loading ? (
-            <div className='flex justify-center items-center h-48'>
-              <div className='text-muted-foreground'>Loading enquiries...</div>
-            </div>
-          ) : error ? (
-            <div className='flex justify-center items-center h-48'>
-              <div className='text-destructive'>{error}</div>
-            </div>
-          ) : filteredEnquiries.length === 0 ? (
-            <div className='flex justify-center items-center h-48'>
-              <div className='text-muted-foreground'>
-                {searchQuery
-                  ? 'No enquiries match your search criteria'
-                  : 'No enquiries found in this category'}
+          <div className='bg-card rounded-xl shadow-lg p-8 border border-[hsl(var(--border))]'>
+            {loading ? (
+              <div className='text-center text-muted-foreground py-12 text-lg animate-pulse'>
+                Loading enquiries...
               </div>
-            </div>
-          ) : (
-            <EnquiryTable
-              enquiries={filteredEnquiries}
-              onView={handleViewEnquiry}
-              onEdit={handleEditEnquiry}
-              onDelete={handleDeleteEnquiry}
-            />
-          )}
+            ) : error ? (
+              <div className='text-center text-destructive py-12 text-lg'>{error}</div>
+            ) : (
+              <EnquiryTable
+                enquiries={filteredEnquiries}
+                onView={handleViewEnquiry}
+                onEdit={handleEditEnquiry}
+                onDelete={handleDeleteEnquiry}
+              />
+            )}
+          </div>
         </TabsContent>
       </Tabs>
-
-      {/* Enquiry Modal for Create/Edit */}
       <EnquiryModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

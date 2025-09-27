@@ -81,7 +81,7 @@ export const EnquiryTable: React.FC<EnquiryTableProps> = ({
   );
 
   return (
-    <div className='overflow-x-auto rounded-md border border-[hsl(var(--border))]'>
+    <div className='overflow-x-auto rounded-xl border border-[hsl(var(--border))] shadow-lg bg-card'>
       <table className='min-w-full divide-y divide-border'>
         <thead className='bg-muted'>
           <tr>
