@@ -1,3 +1,4 @@
+// Move this method inside the EnquiryController class
 // filepath: h:/Gremio/cloudblitz/Server/src/controllers/enquiry.controller.ts
 import { Response } from 'express';
 import { Enquiry } from '../../models/Enquiry';
@@ -11,6 +12,47 @@ import {
 import mongoose from 'mongoose';
 
 export class EnquiryController {
+  /**
+   * Assign enquiry to a user (manual)
+   * @route PUT /api/enquiries/:id/assign
+   */
+  static async assignEnquiry(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { userId } = req.body;
+      if (
+        !mongoose.Types.ObjectId.isValid(id) ||
+        !mongoose.Types.ObjectId.isValid(userId)
+      ) {
+        ResponseHelper.badRequest(res, 'Invalid enquiry or user ID');
+        return;
+      }
+      // Only admin or staff can assign
+      if (
+        !req.user ||
+        (req.user.role !== 'admin' && req.user.role !== 'staff')
+      ) {
+        ResponseHelper.forbidden(
+          res,
+          'You do not have permission to assign enquiries'
+        );
+        return;
+      }
+      const enquiry = await Enquiry.findOne({ _id: id, deletedAt: null });
+      if (!enquiry) {
+        ResponseHelper.notFound(res, 'Enquiry not found');
+        return;
+      }
+      enquiry.assignedTo = userId;
+      await enquiry.save();
+      ResponseHelper.success(res, enquiry, 'Enquiry assigned successfully');
+    } catch (error) {
+      ResponseHelper.error(
+        res,
+        error instanceof Error ? error.message : 'Error assigning enquiry'
+      );
+    }
+  }
   /**
    * Create a new enquiry
    * @route POST /api/enquiries

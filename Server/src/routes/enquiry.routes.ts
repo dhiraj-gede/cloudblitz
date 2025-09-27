@@ -6,6 +6,8 @@ import { validate } from '../middlewares/validation';
 import { createEnquirySchema, updateEnquirySchema } from '../lib/validation';
 
 const router = Router();
+// Assign enquiry to user (manual) - admin/staff only
+router.put('/:id/assign', authenticate, EnquiryController.assignEnquiry);
 
 /**
  * Enquiry Management Routes

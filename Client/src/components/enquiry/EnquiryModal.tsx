@@ -49,7 +49,7 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open: boolean) => !open && onClose()}>
-      <DialogContent className='sm:max-w-[500px]'>
+      <DialogContent className='sm:max-w-5xl w-full'>
         <DialogHeader>
           <DialogTitle>{isEditing ? 'Edit Enquiry' : 'Create New Enquiry'}</DialogTitle>
         </DialogHeader>
