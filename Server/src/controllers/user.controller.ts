@@ -140,6 +140,16 @@ export class UserController {
         delete updateData.role;
       }
 
+      // Only allow users to update their own hasSeenTutorial flag
+      if (
+        req.user &&
+        req.user.role !== 'admin' &&
+        Object.prototype.hasOwnProperty.call(updateData, 'hasSeenTutorial') &&
+        req.user._id.toString() !== id
+      ) {
+        delete updateData.hasSeenTutorial;
+      }
+
       // Update user
       const updatedUser = await User.findByIdAndUpdate(
         id,

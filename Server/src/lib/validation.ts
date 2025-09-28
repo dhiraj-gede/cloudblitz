@@ -35,6 +35,7 @@ export const updateUserSchema = z.object({
     .optional(),
   role: z.enum(['admin', 'staff', 'user']).optional(),
   isActive: z.boolean().optional(),
+  hasSeenTutorial: z.boolean().optional(),
 });
 
 // Enquiry validation schemas

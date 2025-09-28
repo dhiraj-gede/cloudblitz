@@ -166,7 +166,7 @@ export const Dashboard: React.FC<{ role?: string }> = ({ role }) => {
   // };
 
   return (
-    <div className='space-y-6 max-w-7xl mx-auto'>
+  <div className='space-y-6 max-w-7xl mx-auto dashboard-tutorial'>
       {/* Enhanced Header */}
       <div className='bg-card rounded-xl shadow-sm p-6 border border-[hsl(var(--border))]'>
         <div className='flex justify-between items-center'>
@@ -178,7 +178,7 @@ export const Dashboard: React.FC<{ role?: string }> = ({ role }) => {
           </div>
 
           <button
-            className='inline-flex items-center justify-center rounded-lg text-base font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md h-11 px-6 py-2 gap-2'
+            className='inline-flex items-center justify-center rounded-lg text-base font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md h-11 px-6 py-2 gap-2 new-enquiry-tutorial'
             onClick={() => {
               setSelectedEnquiry(undefined);
               setIsModalOpen(true);

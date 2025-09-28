@@ -42,8 +42,10 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
       onSuccess();
       onClose();
     } catch (err) {
+      onClose();
       console.error('Failed to save enquiry:', err);
-      error(`Failed to ${isEditing ? 'update' : 'create'} enquiry`);
+      error(`Failed to ${isEditing ? 'update' : 'create'} enquiry\n`);
+      error(`${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setIsSubmitting(false);
     }

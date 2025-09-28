@@ -7,6 +7,8 @@ export interface User {
   role: 'admin' | 'staff' | 'user';
   createdAt: string;
   updatedAt: string;
+  hasSeenTutorial: boolean;
+
 }
 
 export interface Enquiry {

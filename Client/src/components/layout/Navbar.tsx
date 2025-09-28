@@ -1,4 +1,6 @@
 import React, { useRef } from 'react';
+import { useContext } from 'react';
+import { TutorialContext } from '../../contexts/TutorialContext.ts';
 import {
   Sun,
   Moon,
@@ -58,6 +60,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   searchValue = '',
   onSearchChange,
 }) => {
+  const { startTutorial } = useContext(TutorialContext);
   const UserRoleIcon = userRoleConfig.icon;
   const userMenuRef = useRef<HTMLDivElement>(null);
 
@@ -78,7 +81,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className='sticky top-0 z-40 bg-header/80 backdrop-blur-glass border-b border-header-border supports-backdrop-blur:bg-header/60'>
+  <header className='sticky top-0 z-40 bg-header/80 backdrop-blur-glass border-b border-header-border supports-backdrop-blur:bg-header/60 navbar-tutorial'>
       <div className='flex items-center justify-between px-4 lg:px-6 h-16'>
         {/* Left Section - Logo and Mobile Menu */}
         <div className='flex items-center gap-4'>
@@ -264,6 +267,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                   >
                     <LogOut className='w-4 h-4' />
                     <span>Sign Out</span>
+                  </button>
+                  <button
+                    type='button'
+                    className='w-full text-left px-4 py-2 text-sm hover:bg-muted rounded-md transition-colors'
+                    onClick={startTutorial}
+                  >
+                    Rewatch Tutorial
                   </button>
                 </div>
               </div>

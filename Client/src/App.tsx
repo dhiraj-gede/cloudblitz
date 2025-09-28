@@ -9,7 +9,9 @@ import { AuthPage } from './components/auth/AuthPage.tsx';
 import { Dashboard } from './components/dashboard/Dashboard.tsx';
 import { ToastProvider } from './contexts/ToastContext.tsx';
 import { UserManagement } from './components/admin/UserManagement.tsx';
+import { ProtectedRoute } from './components/auth/ProtectedRoute.tsx';
 import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Users,
@@ -21,11 +23,13 @@ import {
   // FileText,
   Cloud,
 } from 'lucide-react';
+import { TutorialProvider } from './contexts/TutorialProvider.tsx';
 
 function AppContent() {
   const { isAuthenticated, user, logout, isLoading } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   type NavigationKey = keyof typeof navigationConfig;
-  const [activeView, setActiveView] = useState<NavigationKey>('dashboard');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(() => {
@@ -46,11 +50,11 @@ function AppContent() {
     }
   }, [darkMode]);
 
-  // Close menus when view changes
+  // Close menus when route changes
   useEffect(() => {
     setMobileMenuOpen(false);
     setUserMenuOpen(false);
-  }, [activeView]);
+  }, [location.pathname]);
 
   // Navigation configuration
   const navigationConfig = {
@@ -138,7 +142,12 @@ function AppContent() {
     .filter(([, config]) => config.roles.includes(user?.role || 'user'))
     .map(([id, config]) => ({ id, ...config }));
 
-  const ActiveComponent = navigationConfig[activeView]?.component;
+  // Navigation click handler to update URL
+  const handleNavChange = (view: string) => {
+    const navKey = view as NavigationKey;
+    if (navKey === 'dashboard') navigate('/dashboard');
+    else if (navKey === 'users') navigate('/userManagement');
+  };
 
   return (
     <div className='min-h-screen bg-background text-foreground transition-colors duration-200'>
@@ -153,30 +162,36 @@ function AppContent() {
         user={user ?? {}}
         userRoleConfig={userRoleConfig}
         logout={logout}
-        // onSettingsClick={handleSettings}
-        // onProfileClick={handleProfile}
-        // notificationCount={3}
-        // searchValue={searchQuery}
-        // onSearchChange={setSearchQuery}
       />
       <div className='flex'>
         {/* Desktop Sidebar */}
         <Sidebar
           allowedNavItems={allowedNavItems}
-          activeView={activeView}
-          setActiveView={(v: string) => setActiveView(v as NavigationKey)}
+          activeView={location.pathname === '/userManagement' ? 'users' : 'dashboard'}
+          setActiveView={handleNavChange}
         />
         {/* Main Content */}
         <main className='flex-1 min-h-[calc(100vh-4rem)]'>
           <ContentHeader
-            label={navigationConfig[activeView]?.label}
-            description={navigationConfig[activeView]?.description}
+            label={location.pathname === '/userManagement' ? navigationConfig['users'].label : navigationConfig['dashboard'].label}
+            description={location.pathname === '/userManagement' ? navigationConfig['users'].description : navigationConfig['dashboard'].description}
             userRoleConfig={userRoleConfig}
           />
           {/* Page Content */}
           <div className='p-4 lg:p-8'>
             <div className='max-w-7xl mx-auto'>
-              {ActiveComponent && <ActiveComponent role={user?.role} />}
+              <Routes>
+                <Route path='/dashboard' element={<Dashboard role={user?.role} />} />
+                <Route
+                  path='/userManagement'
+                  element={
+                    <ProtectedRoute roles='admin'>
+                      <UserManagement />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path='*' element={<Navigate to='/dashboard' replace />} />
+              </Routes>
             </div>
           </div>
         </main>
@@ -188,8 +203,8 @@ function AppContent() {
         user={user ?? {}}
         userRoleConfig={userRoleConfig}
         allowedNavItems={allowedNavItems}
-        activeView={activeView}
-        setActiveView={(v: string) => setActiveView(v as NavigationKey)}
+        activeView={location.pathname === '/userManagement' ? 'users' : 'dashboard'}
+        setActiveView={handleNavChange}
         logout={logout}
       />
       {/* Click outside to close user menu */}
@@ -204,7 +219,11 @@ function App() {
   return (
     <AuthProvider>
       <ToastProvider>
-        <AppContent />
+        <Router>
+          <TutorialProvider>
+            <AppContent />
+          </TutorialProvider>
+        </Router>
       </ToastProvider>
     </AuthProvider>
   );

@@ -167,7 +167,15 @@ export class EnquiryController {
         ...query,
         status: 'closed',
       });
-      const absoluteTotal = await Enquiry.countDocuments({ deletedAt: null });
+      let absoluteTotal: number;
+      if (req.user && req.user.role !== 'admin') {
+        absoluteTotal = await Enquiry.countDocuments({
+          deletedAt: null,
+          $or: [{ assignedTo: req.user._id }, { createdBy: req.user._id }],
+        });
+      } else {
+        absoluteTotal = await Enquiry.countDocuments({ deletedAt: null });
+      }
 
       // Get enquiries with pagination
       const enquiries = await Enquiry.find(query)
@@ -248,6 +256,7 @@ export class EnquiryController {
     try {
       const { id } = req.params;
       const updateData: UpdateEnquiryInput = req.body;
+      const originalData = { ...updateData };
 
       if (!mongoose.Types.ObjectId.isValid(id)) {
         ResponseHelper.badRequest(res, 'Invalid enquiry ID');
@@ -262,22 +271,51 @@ export class EnquiryController {
         return;
       }
 
-      // Check permissions for non-admin users
-      if (req.user && req.user.role !== 'admin' && req.user.role !== 'staff') {
-        if (
-          !enquiry.createdBy ||
-          enquiry.createdBy.toString() !== req.user._id.toString()
-        ) {
-          ResponseHelper.forbidden(
-            res,
-            'You do not have permission to update this enquiry'
-          );
+      // Granular permissions by role
+      if (req.user) {
+        const isAdmin = req.user.role === 'admin';
+        const isStaff = req.user.role === 'staff';
+        const isUser = req.user.role === 'user';
+        const isCreator = enquiry.createdBy && enquiry.createdBy.toString() === req.user._id.toString();
+        const isAssignee = enquiry.assignedTo && enquiry.assignedTo.toString() === req.user._id.toString();
+
+        if (isAdmin) {
+          // Admin can update anything
+        } else if (isUser) {
+          // User can only update their own enquiry's phone and message
+          if (!isCreator) {
+            ResponseHelper.forbidden(res, 'You do not have permission to update this enquiry');
+            return;
+          }
+          if(enquiry.status !== originalData.status) {
+            ResponseHelper.forbidden(res, 'You do not have permission to update the status of this enquiry');
+            return;
+          }
+          Object.keys(updateData).forEach(key => {
+            if (!['phone', 'message'].includes(key)) {
+              delete (updateData as Record<string, unknown>)[key];
+            }
+          });
+        } else if (isStaff) {
+          if (isCreator && isAssignee) {
+            // Staff who created and is assigned can update all fields
+          } else if (isAssignee && !isCreator) {
+            // Staff assigned but not creator: can only update status
+            Object.keys(updateData).forEach(key => {
+              if (key !== 'status') {
+                delete (updateData as Record<string, unknown>)[key];
+              }
+            });
+          } else {
+            // Other staff: cannot update status or other fields
+            ResponseHelper.forbidden(res, 'You do not have permission to update this enquiry');
+            return;
+          }
+        } else {
+          // Other roles: forbidden
+          ResponseHelper.forbidden(res, 'You do not have permission to update this enquiry');
           return;
         }
-
-        // Regular users can only update basic details, not status or assignment
-        delete updateData.status;
-        delete updateData.assignedTo;
       }
 
       // Round robin assignment logic for update
@@ -307,7 +345,7 @@ export class EnquiryController {
         }
         updateData.assignedTo = nextUser._id;
       }
-
+      console.log('updateData', updateData);
       // Update the enquiry
       const updatedEnquiry = await Enquiry.findByIdAndUpdate(
         id,

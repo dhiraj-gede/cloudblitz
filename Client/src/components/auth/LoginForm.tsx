@@ -14,22 +14,19 @@ interface LoginFormProps {
   onSuccess?: () => void;
   onSwitchToRegister?: () => void;
 }
-
 export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegister }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [credentials, setCredentials] = useState({ email: '', password: '' });
+  const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const { login } = useAuth();
-
+  const handleChange = (field: keyof typeof credentials) => (value: string) =>
+    setCredentials((prev) => ({ ...prev, [field]: value }));
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError(null);
     setIsSubmitting(true);
-
     try {
-      await login(email, password);
+      await login(credentials.email, credentials.password);
       onSuccess?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
@@ -37,57 +34,55 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegis
       setIsSubmitting(false);
     }
   };
-
   return (
     <AuthCard>
+      {' '}
       <AuthCardHeader
         icon={<User className='w-5 h-5' />}
         title='Welcome Back'
         subtitle='Sign in to your account'
-      />
-
-      <form className='space-y-4' onSubmit={handleSubmit}>
-        {error && <ErrorAlert message={error} />}
-
+      />{' '}
+      <form className='space-y-4' onSubmit={handleSubmit} noValidate>
+        {' '}
+        {error && <ErrorAlert message={error} />}{' '}
         <InputField
           id='email'
           label='Email'
           type='email'
-          value={email}
-          onChange={setEmail}
+          value={credentials.email}
+          onChange={handleChange('email')}
           placeholder='Enter your email'
           required
           disabled={isSubmitting}
           icon={<Mail className='w-4 h-4' />}
-        />
-
+        />{' '}
         <PasswordInput
           id='password'
           label='Password'
-          value={password}
-          onChange={setPassword}
+          value={credentials.password}
+          onChange={handleChange('password')}
           placeholder='Enter your password'
           required
           disabled={isSubmitting}
-        />
-
+        />{' '}
         <LoadingButton
           isLoading={isSubmitting}
           type='submit'
           onClick={() => {}}
           loadingText='Signing in...'
+          className='w-full'
         >
-          Sign In
-        </LoadingButton>
-      </form>
-
+          {' '}
+          Sign In{' '}
+        </LoadingButton>{' '}
+      </form>{' '}
       {onSwitchToRegister && (
         <SwitchAuthMode
           text="Don't have an account?"
           linkText='Sign up'
           onClick={onSwitchToRegister}
         />
-      )}
+      )}{' '}
     </AuthCard>
   );
 };

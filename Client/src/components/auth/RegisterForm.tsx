@@ -193,6 +193,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchT
 
         <LoadingButton
           isLoading={isSubmitting}
+          type='submit'
           onClick={() => {}}
           loadingText='Creating your account...'
           className='w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 rounded-lg font-medium shadow-sm smooth-transition focus-ring'

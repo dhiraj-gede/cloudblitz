@@ -10,6 +10,7 @@ export interface AuthContextType {
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
   hasRole: (roles: string | string[]) => boolean;
+  refreshUser?: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
