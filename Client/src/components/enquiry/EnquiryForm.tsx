@@ -38,12 +38,16 @@ export const EnquiryForm: React.FC<EnquiryFormProps> = ({
   const { user: loggedInUser } = useAuth();
 
   useEffect(() => {
+    if (loggedInUser && loggedInUser.role!=='admin') {
+      return;
+    }
+
     setIsLoadingUsers(true);
     fetchUsers()
       .then(setUsers)
       .catch(() => setUsers([]))
       .finally(() => setIsLoadingUsers(false));
-  }, []);
+  }, [loggedInUser]);
 
   const {
     register,

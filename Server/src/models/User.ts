@@ -8,6 +8,7 @@ export interface IUser extends Document {
   password: string;
   role: 'admin' | 'staff' | 'user';
   isActive: boolean;
+  hasSeenTutorial: boolean;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(password: string): Promise<boolean>;
@@ -48,14 +49,18 @@ const userSchema = new Schema<IUser>(
       type: Boolean,
       default: true,
     },
+    hasSeenTutorial: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
     toJSON: {
       transform: function (doc, ret) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { _id, __v, password, ...rest } = ret;
-        return { id: _id, ...rest };
+        // Remove sensitive fields
+  const { _id, ...rest } = ret as Record<string, unknown>;
+  return { id: _id, ...rest };
       },
     },
   }
@@ -67,7 +72,7 @@ userSchema.index({ role: 1 });
 userSchema.index({ isActive: 1 });
 
 // Hash password before saving
-userSchema.pre('save', async function (next) {
+userSchema.pre<IUser>('save', async function (next) {
   if (!this.isModified('password')) return next();
 
   try {

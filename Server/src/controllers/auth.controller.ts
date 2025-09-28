@@ -35,6 +35,7 @@ export class AuthController {
           name: user.name,
           email: user.email,
           role: user.role,
+          hasSeenTutorial: user.hasSeenTutorial
         },
         accessToken: accessToken.token,
         refreshToken: refreshToken.token,
@@ -84,6 +85,7 @@ export class AuthController {
           name: user.name,
           email: user.email,
           role: user.role,
+          hasSeenTutorial: user.hasSeenTutorial
         },
         accessToken: accessToken.token,
         refreshToken: refreshToken.token,
@@ -119,7 +121,8 @@ export class AuthController {
         role: user.role,
         isActive: user.isActive,
         createdAt: user.createdAt,
-        updatedAt: user.updatedAt
+        updatedAt: user.updatedAt,
+        hasSeenTutorial: user.hasSeenTutorial
       }, 'User profile retrieved');
     } catch (error) {
       console.error('Get current user error:', error);

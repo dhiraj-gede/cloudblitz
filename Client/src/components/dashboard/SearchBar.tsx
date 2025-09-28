@@ -13,7 +13,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   placeholder = 'Search enquiries...',
 }) => {
   return (
-    <div className='relative w-full max-w-sm'>
+  <div className='relative w-full max-w-sm searchbar-tutorial'>
       <div className='absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none'>
         <Search className='w-4 h-4 text-muted-foreground' />
       </div>
