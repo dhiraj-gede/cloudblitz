@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import type { ReactNode } from 'react';
 import Joyride from 'react-joyride';
-import type { Step } from 'react-joyride';
-import type { CallBackProps } from 'react-joyride';
+import type { JoyrideProps, Step } from 'react-joyride';
 import { useAuth } from '../hooks/useAuth.ts';
 import { updateUser } from '../services/api.ts';
 import { TutorialContext } from './TutorialContext.ts';
@@ -58,7 +57,7 @@ export const TutorialProvider: React.FC<{ children: ReactNode }> = ({ children }
     },
   ];
 
-  const handleJoyrideCallback = async (data: CallBackProps) => {
+  const handleJoyrideCallback = async (data: JoyrideProps) => {
     if (data.status === 'finished' || data.status === 'skipped') {
       setRun(false);
       if (user && typeof user?.hasSeenTutorial === 'boolean' && !user?.hasSeenTutorial) {
