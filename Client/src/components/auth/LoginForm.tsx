@@ -1,5 +1,14 @@
+// LoginForm.tsx
 import { useState } from 'react';
+import { User, Mail } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.ts';
+import { AuthCard } from '../ui/AuthCard.tsx';
+import { AuthCardHeader } from '../ui/AuthCardHeader.tsx';
+import { InputField } from '../ui/InputField.tsx';
+import { PasswordInput } from '../ui/PasswordInput.tsx';
+import { ErrorAlert } from '../ui/ErrorAlert.tsx';
+import { LoadingButton } from '../ui/LoadingButton.tsx';
+import { SwitchAuthMode } from '../ui/SwitchAuthMode.tsx';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -30,76 +39,55 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegis
   };
 
   return (
-    <div className='w-full max-w-md mx-auto space-y-6'>
-      <div className='text-center'>
-        <h2 className='text-2xl font-bold text-foreground'>Sign In</h2>
-        <p className='mt-2 text-sm text-muted-foreground'>
-          Enter your credentials to access your account
-        </p>
-      </div>
+    <AuthCard>
+      <AuthCardHeader
+        icon={<User className='w-5 h-5' />}
+        title='Welcome Back'
+        subtitle='Sign in to your account'
+      />
 
-      <form onSubmit={handleSubmit} className='space-y-4'>
-        {error && (
-          <div className='p-3 text-sm text-destructive-foreground bg-destructive/10 border border-destructive/20 rounded-md'>
-            {error}
-          </div>
-        )}
+      <form className='space-y-4' onSubmit={handleSubmit}>
+        {error && <ErrorAlert message={error} />}
 
-        <div className='space-y-2'>
-          <label htmlFor='email' className='text-sm font-medium text-foreground'>
-            Email
-          </label>
-          <input
-            id='email'
-            type='email'
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className='w-full px-3 py-2 text-sm border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent'
-            placeholder='Enter your email'
-            disabled={isSubmitting}
-          />
-        </div>
-
-        <div className='space-y-2'>
-          <label htmlFor='password' className='text-sm font-medium text-foreground'>
-            Password
-          </label>
-          <input
-            id='password'
-            type='password'
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className='w-full px-3 py-2 text-sm border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent'
-            placeholder='Enter your password'
-            disabled={isSubmitting}
-          />
-        </div>
-
-        <button
-          type='submit'
+        <InputField
+          id='email'
+          label='Email'
+          type='email'
+          value={email}
+          onChange={setEmail}
+          placeholder='Enter your email'
+          required
           disabled={isSubmitting}
-          className='w-full px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
+          icon={<Mail className='w-4 h-4' />}
+        />
+
+        <PasswordInput
+          id='password'
+          label='Password'
+          value={password}
+          onChange={setPassword}
+          placeholder='Enter your password'
+          required
+          disabled={isSubmitting}
+        />
+
+        <LoadingButton
+          isLoading={isSubmitting}
+          type='submit'
+          onClick={() => {}}
+          loadingText='Signing in...'
         >
-          {isSubmitting ? 'Signing in...' : 'Sign In'}
-        </button>
+          Sign In
+        </LoadingButton>
       </form>
 
       {onSwitchToRegister && (
-        <div className='text-center'>
-          <p className='text-sm text-muted-foreground'>
-            Don't have an account?{' '}
-            <button
-              type='button'
-              onClick={onSwitchToRegister}
-              className='font-medium text-primary hover:text-primary/90'
-            >
-              Create one here
-            </button>
-          </p>
-        </div>
+        <SwitchAuthMode
+          text="Don't have an account?"
+          linkText='Sign up'
+          onClick={onSwitchToRegister}
+        />
       )}
-    </div>
+    </AuthCard>
   );
 };

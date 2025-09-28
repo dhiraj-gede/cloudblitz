@@ -52,11 +52,12 @@ export interface ApiResponse<T> {
 
 export interface PaginatedResponse<T> {
   data: T[];
-  pagination: {
+  meta: {
     page: number;
     limit: number;
     total: number;
     totalPages: number;
+    [key: string]: string | number | boolean | undefined;
   };
 }
 

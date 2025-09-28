@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog.tsx';
+import { Dialog, DialogContent } from '../ui/dialog.tsx';
 import { EnquiryForm } from './EnquiryForm.tsx';
 import { useToast } from '../../hooks/useToast.ts';
 import type { Enquiry } from '../../types/index.ts';
@@ -11,6 +11,7 @@ interface EnquiryModalProps {
   onClose: () => void;
   enquiry?: Enquiry;
   onSuccess: () => void;
+  canAssign?: boolean;
 }
 
 export const EnquiryModal: React.FC<EnquiryModalProps> = ({
@@ -18,6 +19,7 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
   onClose,
   enquiry,
   onSuccess,
+  canAssign = false,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { success, error } = useToast();
@@ -49,15 +51,13 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open: boolean) => !open && onClose()}>
-      <DialogContent className='sm:max-w-5xl w-full'>
-        <DialogHeader>
-          <DialogTitle>{isEditing ? 'Edit Enquiry' : 'Create New Enquiry'}</DialogTitle>
-        </DialogHeader>
+      <DialogContent className='sm:max-w-5xl w-full max-h-[90vh] overflow-y-auto'>
         <EnquiryForm
           enquiry={enquiry}
           onSubmit={handleSubmit}
           onCancel={onClose}
           isSubmitting={isSubmitting}
+          canAssign={canAssign}
         />
       </DialogContent>
     </Dialog>

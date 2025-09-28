@@ -1,11 +1,10 @@
-@import 'tailwindcss';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* Base theme colors */
+    /* Enhanced Base Theme Colors */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
@@ -27,112 +26,441 @@
     --ring: 221.2 83.2% 53.3%;
     --radius: 0.5rem;
 
-    /* Extended color palette for UI elements */
+    /* Enhanced Gray Scale (Better Contrast) */
     --gray-50: 210 40% 98%;
     --gray-100: 210 40% 96%;
-    --gray-200: 214.3 31.8% 91.4%;
-    --gray-300: 215.4 16.3% 85%;
-    --gray-400: 215.4 16.3% 65.9%;
-    --gray-500: 215.4 16.3% 46.9%;
-    --gray-600: 215.4 16.3% 36.9%;
-    --gray-700: 222.2 47.4% 11.2%;
-    --gray-800: 222.2 84% 4.9%;
-    --gray-900: 222.2 84% 2.5%;
+    --gray-200: 214 32% 91%;
+    --gray-300: 213 27% 84%;
+    --gray-400: 215 20% 65%;
+    --gray-500: 215 16% 47%;
+    --gray-600: 215 19% 35%;
+    --gray-700: 215 25% 27%;
+    --gray-800: 217 33% 17%;
+    --gray-900: 222 47% 11%;
 
-    --blue-50: 221.2 83.2% 95%;
-    --blue-100: 221.2 83.2% 90%;
-    --blue-200: 221.2 83.2% 80%;
-    --blue-300: 221.2 83.2% 70%;
-    --blue-400: 221.2 83.2% 60%;
-    --blue-500: 221.2 83.2% 53.3%;
-    --blue-600: 221.2 83.2% 45%;
-    --blue-700: 221.2 83.2% 35%;
-    --blue-800: 221.2 83.2% 25%;
-    --blue-900: 221.2 83.2% 15%;
+    /* Primary Colors - Enhanced Contrast */
+    --blue-50: 214 100% 97%;
+    --blue-100: 214 95% 93%;
+    --blue-200: 213 97% 87%;
+    --blue-300: 212 96% 78%;
+    --blue-400: 213 94% 68%;
+    --blue-500: 217 91% 60%;
+    --blue-600: 221 83% 53%;
+    --blue-700: 224 76% 48%;
+    --blue-800: 226 71% 40%;
+    --blue-900: 224 64% 33%;
 
-    --amber-50: 45 100% 95%;
-    --amber-100: 45 100% 90%;
-    --amber-200: 45 100% 80%;
-    --amber-300: 45 100% 70%;
-    --amber-400: 45 100% 60%;
-    --amber-500: 45 100% 50%;
-    --amber-600: 45 100% 40%;
-    --amber-700: 45 100% 30%;
-    --amber-800: 45 100% 20%;
-    --amber-900: 45 100% 10%;
+    /* Secondary Colors */
+    --purple-50: 250 245% 255%;
+    --purple-100: 250 240% 250%;
+    --purple-200: 250 230% 245%;
+    --purple-300: 252 230% 235%;
+    --purple-400: 255 230% 225%;
+    --purple-500: 262 83% 58%;
+    --purple-600: 262 83% 53%;
+    --purple-700: 262 83% 47%;
+    --purple-800: 262 83% 40%;
+    --purple-900: 262 83% 33%;
 
-    --green-50: 140 73% 95%;
-    --green-100: 140 73% 90%;
-    --green-200: 140 73% 80%;
-    --green-300: 140 73% 70%;
-    --green-400: 140 73% 60%;
-    --green-500: 140 73% 50%;
-    --green-600: 140 73% 40%;
-    --green-700: 140 73% 30%;
-    --green-800: 140 73% 20%;
-    --green-900: 140 73% 10%;
+    /* Success Colors - Better Green Palette */
+    --green-50: 138 76% 97%;
+    --green-100: 141 84% 93%;
+    --green-200: 141 79% 85%;
+    --green-300: 142 77% 73%;
+    --green-400: 142 69% 58%;
+    --green-500: 142 72% 29%;
+    --green-600: 142 76% 36%;
+    --green-700: 142 72% 29%;
+    --green-800: 143 64% 24%;
+    --green-900: 144 61% 20%;
 
-    --rose-50: 350 100% 95%;
-    --rose-100: 350 100% 90%;
-    --rose-200: 350 100% 80%;
-    --rose-300: 350 100% 70%;
-    --rose-400: 350 100% 60%;
-    --rose-500: 350 100% 50%;
-    --rose-600: 350 100% 40%;
-    --rose-700: 350 100% 30%;
-    --rose-800: 350 100% 20%;
-    --rose-900: 350 100% 10%;
+    /* Warning Colors - Enhanced Amber/Yellow */
+    --amber-50: 48 100% 96%;
+    --amber-100: 48 96% 89%;
+    --amber-200: 48 97% 77%;
+    --amber-300: 46 97% 65%;
+    --amber-400: 43 96% 56%;
+    --amber-500: 38 92% 50%;
+    --amber-600: 32 95% 44%;
+    --amber-700: 26 90% 37%;
+    --amber-800: 23 83% 31%;
+    --amber-900: 22 78% 26%;
 
-    /* Utility colors for hover, focus, disabled, etc. */
-    --hover-bg: var(--muted);
-    --hover-fg: var(--foreground);
-    --focus-ring: var(--ring);
-    --disabled-bg: var(--muted);
-    --disabled-fg: var(--muted-foreground);
-    --success: var(--green-500);
-    --success-bg: var(--green-100);
-    --success-fg: var(--green-800);
+    /* Error Colors - Better Red Palette */
+    --red-50: 0 86% 97%;
+    --red-100: 0 93% 94%;
+    --red-200: 0 96% 89%;
+    --red-300: 0 94% 82%;
+    --red-400: 0 91% 71%;
+    --red-500: 0 84% 60%;
+    --red-600: 0 72% 51%;
+    --red-700: 0 74% 42%;
+    --red-800: 0 70% 35%;
+    --red-900: 0 63% 31%;
+
+    /* Additional Functional Colors */
+
+    /* Info Colors */
+    --cyan-50: 183 100% 96%;
+    --cyan-100: 185 95% 90%;
+    --cyan-200: 186 94% 82%;
+    --cyan-300: 187 92% 69%;
+    --cyan-400: 187 86% 53%;
+    --cyan-500: 188 86% 53%;
+    --cyan-600: 192 91% 36%;
+    --cyan-700: 196 84% 30%;
+    --cyan-800: 197 82% 24%;
+    --cyan-900: 199 84% 19%;
+
+    /* Pink/Accent Colors */
+    --pink-50: 327 73% 97%;
+    --pink-100: 326 78% 95%;
+    --pink-200: 326 85% 90%;
+    --pink-300: 327 87% 82%;
+    --pink-400: 328 86% 70%;
+    --pink-500: 330 81% 60%;
+    --pink-600: 333 71% 51%;
+    --pink-700: 335 78% 42%;
+    --pink-800: 336 74% 35%;
+    --pink-900: 336 69% 30%;
+
+    /* Teal/Secondary Accent */
+    --teal-50: 166 76% 97%;
+    --teal-100: 167 85% 89%;
+    --teal-200: 168 84% 78%;
+    --teal-300: 171 77% 64%;
+    --teal-400: 172 66% 50%;
+    --teal-500: 173 80% 40%;
+    --teal-600: 175 84% 32%;
+    --teal-700: 175 77% 26%;
+    --teal-800: 176 69% 22%;
+    --teal-900: 176 61% 19%;
+
+    /* Indigo/Alternative Primary */
+    --indigo-50: 226 100% 97%;
+    --indigo-100: 226 100% 94%;
+    --indigo-200: 228 96% 89%;
+    --indigo-300: 229 93% 82%;
+    --indigo-400: 234 89% 74%;
+    --indigo-500: 239 84% 67%;
+    --indigo-600: 243 75% 59%;
+    --indigo-700: 245 58% 51%;
+    --indigo-800: 244 55% 41%;
+    --indigo-900: 242 47% 34%;
+
+    /* Extended Utility Colors with Better Contrast */
+    --success: var(--green-600);
+    --success-light: var(--green-500);
+    --success-dark: var(--green-700);
+    --success-bg: var(--green-50);
+    --success-fg: var(--green-900);
+
     --warning: var(--amber-500);
-    --warning-bg: var(--amber-100);
-    --warning-fg: var(--amber-800);
-    --info: var(--blue-500);
-    --info-bg: var(--blue-100);
-    --info-fg: var(--blue-800);
-    --error: var(--rose-500);
-    --error-bg: var(--rose-100);
-    --error-fg: var(--rose-800);
+    --warning-light: var(--amber-400);
+    --warning-dark: var(--amber-600);
+    --warning-bg: var(--amber-50);
+    --warning-fg: var(--amber-900);
+
+    --error: var(--red-600);
+    --error-light: var(--red-500);
+    --error-dark: var(--red-700);
+    --error-bg: var(--red-50);
+    --error-fg: var(--red-900);
+
+    --info: var(--cyan-600);
+    --info-light: var(--cyan-500);
+    --info-dark: var(--cyan-700);
+    --info-bg: var(--cyan-50);
+    --info-fg: var(--cyan-900);
+
+    /* Status Colors for Different Use Cases */
+    --online: var(--green-500);
+    --offline: var(--gray-500);
+    --away: var(--amber-500);
+    --busy: var(--red-500);
+    --focus: var(--blue-500);
+    --idle: var(--gray-400);
+
+    /* Semantic Colors for UI Elements */
+    --sidebar-bg: var(--gray-50);
+    --sidebar-foreground: var(--gray-900);
+    --sidebar-accent: var(--gray-100);
+    --sidebar-accent-foreground: var(--gray-900);
+    --sidebar-border: var(--gray-200);
+
+    --header-bg: 0 0% 100%;
+    --header-foreground: var(--gray-900);
+    --header-border: var(--gray-200);
+
+    --table-header: var(--gray-50);
+    --table-border: var(--gray-200);
+    --table-row-even: var(--gray-25);
+    --table-row-odd: 0 0% 100%;
+
+    --code-bg: var(--gray-900);
+    --code-foreground: var(--gray-100);
+    --code-border: var(--gray-700);
+
+    /* Interactive States */
+    --hover-bg: var(--gray-100);
+    --hover-fg: var(--gray-900);
+    --active-bg: var(--gray-200);
+    --active-fg: var(--gray-900);
+    --focus-ring: var(--blue-500);
+    --disabled-bg: var(--gray-100);
+    --disabled-fg: var(--gray-500);
+    --disabled-border: var(--gray-300);
+
+    /* Shadow Colors */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    /* Dark Theme - Enhanced Contrast */
+    --background: 222 47% 11%;
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
+    --card: 222 47% 11%;
     --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
+    --popover: 222 47% 11%;
     --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 217 33% 17%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 33% 17%;
     --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 224 76% 48%;
+
+    /* Dark Theme Gray Scale */
+    --gray-50: 222 47% 11%;
+    --gray-100: 220 33% 18%;
+    --gray-200: 217 33% 22%;
+    --gray-300: 215 25% 27%;
+    --gray-400: 215 20% 35%;
+    --gray-500: 215 16% 47%;
+    --gray-600: 215 20% 65%;
+    --gray-700: 213 27% 84%;
+    --gray-800: 210 40% 96%;
+    --gray-900: 0 0% 100%;
+
+    /* Dark Theme Functional Colors */
+    --success: var(--green-400);
+    --success-light: var(--green-300);
+    --success-dark: var(--green-500);
+    --success-bg: var(--green-950);
+    --success-fg: var(--green-100);
+
+    --warning: var(--amber-400);
+    --warning-light: var(--amber-300);
+    --warning-dark: var(--amber-500);
+    --warning-bg: var(--amber-950);
+    --warning-fg: var(--amber-100);
+
+    --error: var(--red-400);
+    --error-light: var(--red-300);
+    --error-dark: var(--red-500);
+    --error-bg: var(--red-950);
+    --error-fg: var(--red-100);
+
+    --info: var(--cyan-400);
+    --info-light: var(--cyan-300);
+    --info-dark: var(--cyan-500);
+    --info-bg: var(--cyan-950);
+    --info-fg: var(--cyan-100);
+
+    /* Dark Theme Semantic Colors */
+    --sidebar-bg: var(--gray-50);
+    --sidebar-foreground: var(--gray-900);
+    --sidebar-accent: var(--gray-200);
+    --sidebar-accent-foreground: var(--gray-800);
+    --sidebar-border: var(--gray-700);
+
+    --header-bg: var(--gray-900);
+    --header-foreground: var(--gray-100);
+    --header-border: var(--gray-700);
+
+    --table-header: var(--gray-800);
+    --table-border: var(--gray-700);
+    --table-row-even: var(--gray-900);
+    --table-row-odd: var(--gray-800);
+
+    --code-bg: var(--gray-800);
+    --code-foreground: var(--gray-100);
+    --code-border: var(--gray-600);
+
+    /* Dark Theme Interactive States */
+    --hover-bg: var(--gray-800);
+    --hover-fg: var(--gray-100);
+    --active-bg: var(--gray-700);
+    --active-fg: var(--gray-100);
+    --focus-ring: var(--blue-400);
+    --disabled-bg: var(--gray-800);
+    --disabled-fg: var(--gray-600);
+    --disabled-border: var(--gray-700);
+
+    /* Dark Theme Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+  }
+}
+
+/* Custom Utility Classes */
+@layer utilities {
+  .bg-sidebar {
+    background-color: hsl(var(--sidebar-bg));
+  }
+
+  .text-sidebar-foreground {
+    color: hsl(var(--sidebar-foreground));
+  }
+
+  .bg-sidebar-accent {
+    background-color: hsl(var(--sidebar-accent));
+  }
+
+  .text-sidebar-accent-foreground {
+    color: hsl(var(--sidebar-accent-foreground));
+  }
+
+  .border-sidebar {
+    border-color: hsl(var(--sidebar-border));
+  }
+
+  .bg-header {
+    background-color: hsl(var(--header-bg));
+  }
+
+  .text-header-foreground {
+    color: hsl(var(--header-foreground));
+  }
+
+  .border-header {
+    border-color: hsl(var(--header-border));
+  }
+
+  .bg-table-header {
+    background-color: hsl(var(--table-header));
+  }
+
+  .border-table {
+    border-color: hsl(var(--table-border));
+  }
+
+  .bg-code {
+    background-color: hsl(var(--code-bg));
+  }
+
+  .text-code {
+    color: hsl(var(--code-foreground));
+  }
+
+  .border-code {
+    border-color: hsl(var(--code-border));
+  }
+
+  /* Status Utilities */
+  .text-online {
+    color: hsl(var(--online));
+  }
+  .text-offline {
+    color: hsl(var(--offline));
+  }
+  .text-away {
+    color: hsl(var(--away));
+  }
+  .text-busy {
+    color: hsl(var(--busy));
+  }
+  .text-focus {
+    color: hsl(var(--focus));
+  }
+  .text-idle {
+    color: hsl(var(--idle));
+  }
+
+  .bg-online {
+    background-color: hsl(var(--online));
+  }
+  .bg-offline {
+    background-color: hsl(var(--offline));
+  }
+  .bg-away {
+    background-color: hsl(var(--away));
+  }
+  .bg-busy {
+    background-color: hsl(var(--busy));
+  }
+  .bg-focus {
+    background-color: hsl(var(--focus));
+  }
+  .bg-idle {
+    background-color: hsl(var(--idle));
+  }
+
+  /* Enhanced Focus States */
+  .focus-ring {
+    outline: none;
+    box-shadow:
+      0 0 0 2px hsl(var(--ring)),
+      0 0 0 4px hsl(var(--background));
+  }
+
+  /* Glass Morphism Effect */
+  .backdrop-blur-glass {
+    backdrop-filter: blur(16px) saturate(180%);
+    background-color: hsl(var(--background) / 0.8);
+  }
+
+  /* Gradient Text */
+  .gradient-text {
+    background-image: linear-gradient(to right, hsl(var(--primary)), hsl(var(--secondary)));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Lift Effect on Hover */
+  .hover-lift {
+    transition: all 0.2s;
+  }
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 10px 15px -3px rgb(0 0 0 / 0.1),
+      0 4px 6px -4px rgb(0 0 0 / 0.1);
+  }
+
+  /* Smooth Transitions */
+  .smooth-transition {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
 body {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
+  line-height: 1.6;
   font-weight: 400;
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--background));
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -142,53 +470,63 @@ body {
   min-height: 100vh;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
 }
 
-a:hover {
-  color: #535bf2;
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 4px;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
 }
 
-button:hover {
-  border-color: #646cff;
+/* Selection Styling */
+::selection {
+  background-color: hsl(var(--primary) / 0.2);
+  color: hsl(var(--primary-foreground));
 }
 
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+/* Focus Styles for Accessibility */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid hsl(var(--focus-ring));
+  outline-offset: 2px;
 }
 
-@media (prefers-color-scheme: light) {
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    --border: 0 0% 0%;
+    --input: 0 0% 0%;
+    --ring: 0 0% 0%;
   }
 
-  a:hover {
-    color: #747bff;
-  }
-
-  button {
-    background-color: #f9f9f9;
+  .dark {
+    --border: 0 0% 100%;
+    --input: 0 0% 100%;
+    --ring: 0 0% 100%;
   }
 }

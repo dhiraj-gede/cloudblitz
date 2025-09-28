@@ -52,13 +52,16 @@ describe('Enquiry API', () => {
 
   describe('POST /api/enquiries', () => {
     it('should create a new enquiry successfully', async () => {
-      const res = await request(app).post('/api/enquiries').send({
-        customerName: 'John Doe',
-        email: 'john@example.com',
-        phone: '+1234567890',
-        message: 'This is a test enquiry message.',
-        priority: 'medium',
-      });
+      const res = await request(app)
+        .post('/api/enquiries')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          customerName: 'John Doe',
+          email: 'john@example.com',
+          phone: '+1234567890',
+          message: 'This is a test enquiry message.',
+          priority: 'medium',
+        });
 
       expect(res.status).toBe(201);
       expect(res.body).toHaveProperty('status', 'success');
@@ -70,12 +73,15 @@ describe('Enquiry API', () => {
     });
 
     it('should validate enquiry input', async () => {
-      const res = await request(app).post('/api/enquiries').send({
-        customerName: 'J', // Too short
-        email: 'not-an-email',
-        phone: 'abc', // Invalid format
-        message: 'Short', // Too short
-      });
+      const res = await request(app)
+        .post('/api/enquiries')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          customerName: 'J', // Too short
+          email: 'not-an-email',
+          phone: 'abc', // Invalid format
+          message: 'Short', // Too short
+        });
 
       expect(res.status).toBe(400);
       expect(res.body).toHaveProperty('status', 'error');
@@ -154,6 +160,7 @@ describe('Enquiry API', () => {
       expect(res.status).toBe(200);
       expect(res.body.data).toHaveProperty('status', 'in-progress');
       expect(res.body.data).toHaveProperty('priority', 'high');
+      expect(res.body.data.assignedTo).toHaveProperty('id', staffUser.id);
     });
 
     it('should prevent regular users from updating status', async () => {
@@ -174,7 +181,40 @@ describe('Enquiry API', () => {
         });
       console.log(res.body);
       // Status should not change
-      expect(res.body.status).not.toBe('closed');
+      expect(res.body.status).toBe('error');
+      expect(res.body.message).toBe(
+        'You do not have permission to update this enquiry'
+      );
+    });
+  });
+
+  describe('PUT /api/enquiries/:id/assign', () => {
+    it('should allow admin to manually assign enquiry to staff', async () => {
+      const res = await request(app)
+        .put(`/api/enquiries/${testEnquiryId}/assign`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ userId: staffUser.id });
+      expect(res.status).toBe(200);
+      expect(res.body.data.assignedTo).toBe(staffUser.id);
+      expect(res.body.message).toMatch(/assigned successfully/i);
+    });
+
+    it('should prevent regular user from assigning enquiry', async () => {
+      const res = await request(app)
+        .put(`/api/enquiries/${testEnquiryId}/assign`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({ userId: staffUser.id });
+      expect(res.status).toBe(403);
+      expect(res.body.message).toMatch(/do not have permission/i);
+    });
+
+    it('should return 400 for invalid userId', async () => {
+      const res = await request(app)
+        .put(`/api/enquiries/${testEnquiryId}/assign`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ userId: 'invalidid' });
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch(/invalid enquiry or user id/i);
     });
   });
 

@@ -17,6 +17,7 @@ router.put('/:id/assign', authenticate, EnquiryController.assignEnquiry);
 // Create enquiry - anyone can create
 router.post(
   '/',
+  authenticate,
   validate(createEnquirySchema),
   EnquiryController.createEnquiry
 );

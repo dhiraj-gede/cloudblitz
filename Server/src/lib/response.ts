@@ -13,13 +13,18 @@ export interface ApiResponse<T = unknown> {
 }
 
 export class ResponseHelper {
-  static success<T>(res: Response, data?: T, message?: string, statusCode: number = 200): void {
+  static success<T>(
+    res: Response,
+    data?: T,
+    message?: string,
+    statusCode: number = 200
+  ): void {
     const response: ApiResponse<T> = {
       status: 'success',
       message,
-      data
+      data,
     };
-    
+
     res.status(statusCode).json(response);
   }
 
@@ -30,22 +35,23 @@ export class ResponseHelper {
   static error(res: Response, message: string, statusCode: number = 400): void {
     const response: ApiResponse = {
       status: 'error',
-      message
+      message,
     };
-    
+
     res.status(statusCode).json(response);
   }
 
   static paginated<T>(
-    res: Response, 
-    data: T[], 
-    page: number, 
-    limit: number, 
-    total: number, 
-    message?: string
+    res: Response,
+    data: T[],
+    page: number,
+    limit: number,
+    total: number,
+    message?: string,
+    meta?: { [x: string]: string | number | boolean | undefined }
   ): void {
     const totalPages = Math.ceil(total / limit);
-    
+
     const response: ApiResponse<T[]> = {
       status: 'success',
       message: message || 'Data retrieved successfully',
@@ -54,10 +60,11 @@ export class ResponseHelper {
         page,
         limit,
         total,
-        totalPages
-      }
+        totalPages,
+        ...meta,
+      },
     };
-    
+
     res.status(200).json(response);
   }
 
@@ -65,7 +72,10 @@ export class ResponseHelper {
     this.error(res, message, 404);
   }
 
-  static unauthorized(res: Response, message: string = 'Unauthorized access'): void {
+  static unauthorized(
+    res: Response,
+    message: string = 'Unauthorized access'
+  ): void {
     this.error(res, message, 401);
   }
 
@@ -77,11 +87,17 @@ export class ResponseHelper {
     this.error(res, message, 400);
   }
 
-  static conflict(res: Response, message: string = 'Resource already exists'): void {
+  static conflict(
+    res: Response,
+    message: string = 'Resource already exists'
+  ): void {
     this.error(res, message, 409);
   }
 
-  static internalError(res: Response, message: string = 'Internal server error'): void {
+  static internalError(
+    res: Response,
+    message: string = 'Internal server error'
+  ): void {
     this.error(res, message, 500);
   }
 }

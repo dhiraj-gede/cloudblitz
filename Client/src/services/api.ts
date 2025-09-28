@@ -65,17 +65,21 @@ import type {
   EnquiryPayload,
 } from '../types/index.ts';
 
-export const fetchEnquiries = async (filters?: EnquiryFilters): Promise<Enquiry[]> => {
+export const fetchEnquiries = async (
+  filters?: EnquiryFilters
+): Promise<PaginatedResponse<Enquiry>> => {
   // Build query string from filters
   const queryParams = new URLSearchParams();
   if (filters?.status) queryParams.append('status', filters.status);
   if (filters?.assignedTo) queryParams.append('assignedTo', filters.assignedTo);
   if (filters?.search) queryParams.append('search', filters.search);
+  if (filters?.page) queryParams.append('page', filters.page.toString());
+  if (filters?.limit) queryParams.append('limit', filters.limit.toString());
 
   const query = queryParams.toString() ? `?${queryParams.toString()}` : '';
 
   const response = await api.get<PaginatedResponse<Enquiry>>(`/enquiries${query}`);
-  return response.data || [];
+  return response;
 };
 
 export const fetchEnquiryById = async (id: string): Promise<Enquiry> => {

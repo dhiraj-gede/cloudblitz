@@ -65,12 +65,17 @@ export class EnquiryController {
       // Add the creator if authenticated
       if (req.user) {
         enquiryData.createdBy = req.user._id;
+      } else {
+        ResponseHelper.badRequest(
+          res,
+          'User must be authenticated to create an enquiry'
+        );
+        return;
       }
 
       // Round robin assignment logic
       if (enquiryData.autoAssign) {
         // Only assign to active staff/admin
-        console.log('Auto-assigning enquiry...');
         const users = await User.find({
           isActive: true,
           role: { $in: ['admin', 'staff'] },
@@ -82,15 +87,11 @@ export class EnquiryController {
           );
           return;
         }
-        console.log(
-          'Found users for assignment:',
-          users.map(u => u.email)
-        );
+
         // Find last assigned enquiry
         const lastEnquiry = await Enquiry.findOne({
           assignedTo: { $in: users.map(u => u._id) },
         }).sort({ createdAt: -1 });
-        console.log('Last assigned enquiry:', lastEnquiry);
         let nextUser;
         if (!lastEnquiry) {
           nextUser = users[0];
@@ -100,7 +101,6 @@ export class EnquiryController {
           );
           nextUser = users[(lastIndex + 1) % users.length];
         }
-        console.log('Assigning to user:', nextUser.email);
         enquiryData.assignedTo = nextUser._id;
       }
 
@@ -152,8 +152,22 @@ export class EnquiryController {
       if (req.user && req.user.role !== 'admin') {
         query.$or = [{ assignedTo: req.user._id }, { createdBy: req.user._id }];
       }
+      // get count for new Enquiries, inProgress, closed
 
       const total = await Enquiry.countDocuments(query);
+      const newCount = await Enquiry.countDocuments({
+        ...query,
+        status: 'new',
+      });
+      const inProgressCount = await Enquiry.countDocuments({
+        ...query,
+        status: 'in-progress',
+      });
+      const closedCount = await Enquiry.countDocuments({
+        ...query,
+        status: 'closed',
+      });
+      const absoluteTotal = await Enquiry.countDocuments({ deletedAt: null });
 
       // Get enquiries with pagination
       const enquiries = await Enquiry.find(query)
@@ -163,7 +177,12 @@ export class EnquiryController {
         .skip((page - 1) * limit)
         .limit(limit);
 
-      ResponseHelper.paginated(res, enquiries, page, limit, total);
+      ResponseHelper.paginated(res, enquiries, page, limit, total, undefined, {
+        newCount,
+        inProgressCount,
+        closedCount,
+        absoluteTotal,
+      });
     } catch (error) {
       ResponseHelper.error(
         res,

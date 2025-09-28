@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { Eye, Pencil, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import {
+  Eye,
+  Pencil,
+  Trash2,
+  ChevronDown,
+  ChevronUp,
+  AlertCircle,
+  Clock,
+  CheckCircle,
+} from 'lucide-react';
 import type { Enquiry } from '../../types/index.ts';
 
 interface EnquiryTableProps {
@@ -7,6 +16,7 @@ interface EnquiryTableProps {
   onView?: (enquiry: Enquiry) => void;
   onEdit?: (enquiry: Enquiry) => void;
   onDelete?: (enquiry: Enquiry) => void;
+  canAssign?: boolean;
 }
 
 export const EnquiryTable: React.FC<EnquiryTableProps> = ({
@@ -48,6 +58,18 @@ export const EnquiryTable: React.FC<EnquiryTableProps> = ({
       default:
         return baseClasses;
     }
+  };
+  type StatusType = 'new' | 'in-progress' | 'closed';
+  const getStatusConfig = (status: string) => {
+    const configs: Record<StatusType, { icon: typeof AlertCircle; color: string; bg: string }> = {
+      new: { icon: AlertCircle, color: 'text-blue-600', bg: 'bg-blue-50' },
+      'in-progress': { icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50' },
+      closed: { icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-50' },
+    };
+    if (status in configs) {
+      return configs[status as StatusType];
+    }
+    return configs.new;
   };
 
   const formatDate = (dateString: string) => {
@@ -91,9 +113,12 @@ export const EnquiryTable: React.FC<EnquiryTableProps> = ({
               Phone
             </th>
             {renderSortableHeader('Status', 'status')}
+            <th className='px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider'>
+              Assigned To
+            </th>
             {renderSortableHeader('Date', 'createdAt')}
-            <th className='px-4 py-3 relative'>
-              <span className='sr-only'>Actions</span>
+            <th className='px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider'>
+              Actions
             </th>
           </tr>
         </thead>
@@ -110,14 +135,30 @@ export const EnquiryTable: React.FC<EnquiryTableProps> = ({
                 <div className='text-muted-foreground'>{enquiry.phone}</div>
               </td>
               <td className='px-4 py-3 whitespace-nowrap'>
-                <span className={getStatusBadgeClass(enquiry.status)}>
-                  {enquiry.status.replace('-', ' ')}
+                <span
+                  className={
+                    getStatusBadgeClass(enquiry.status) +
+                    ' flex items-center gap-2 shadow-sm border border-border/30 bg-opacity-90 backdrop-blur-sm'
+                  }
+                  style={{ minWidth: 110, justifyContent: 'flex-start', display: 'inline-flex' }}
+                >
+                  <span className='flex items-center justify-center rounded-full bg-white/60 p-0.5 mr-1 shadow'>
+                    {React.createElement(getStatusConfig(enquiry.status).icon, {
+                      className: `w-4 h-4 ${getStatusConfig(enquiry.status).color}`,
+                    })}
+                  </span>
+                  <span className='capitalize font-semibold tracking-wide'>
+                    {enquiry.status.replace('-', ' ')}
+                  </span>
                 </span>
+              </td>
+              <td className='px-4 py-3 whitespace-nowrap'>
+                <div className='text-muted-foreground'>{enquiry.assignedTo?.name}</div>
               </td>
               <td className='px-4 py-3 whitespace-nowrap text-muted-foreground'>
                 {formatDate(enquiry.createdAt)}
               </td>
-              <td className='px-4 py-3 whitespace-nowrap text-sm font-medium text-right space-x-2'>
+              <td className='px-4 py-3 whitespace-nowrap text-sm font-medium text-start space-x-2'>
                 <button
                   onClick={() => onView?.(enquiry)}
                   className='text-blue-600 hover:text-blue-900'
@@ -139,6 +180,8 @@ export const EnquiryTable: React.FC<EnquiryTableProps> = ({
                   <span className='sr-only'>Delete</span>
                   <Trash2 className='w-4 h-4' />
                 </button>
+                {/* Assignment actions can be added here if canAssign is true */}
+                {/* Example: {canAssign && <AssignButton ... />} */}
               </td>
             </tr>
           ))}
