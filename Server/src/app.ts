@@ -41,6 +41,12 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// API request logging middleware
+app.use((req: Request, res: Response, next: NextFunction) => {
+  console.log(`[API] ${req.method} ${req.originalUrl}`);
+  next();
+});
+
 // Apply security middleware conditionally
 if (process.env.NODE_ENV !== 'test') {
   setupSecurity(app);
@@ -111,6 +117,7 @@ const connectDB = async (): Promise<void> => {
 
     const mongoUri =
       process.env.MONGODB_URI || 'mongodb://localhost:27017/cloudblitz';
+    console.log(`🔗 MongoDB URI: ${mongoUri}`);
     await mongoose.connect(mongoUri);
 
     // Log connection details based on environment

@@ -60,7 +60,7 @@ services:
       VITE_API_BASE_URL: http://localhost:5000/api
       VITE_APP_NAME: CloudBlitz
     ports:
-      - "3000:3000"
+      - "5173:5173"
     volumes:
       - ./Client:/app
       - /app/node_modules
@@ -68,7 +68,7 @@ services:
       - cloudblitz-dev-network
     depends_on:
       - backend-dev
-    command: npm run dev
+    command: npm run dev -- --host 0.0.0.0
 
 volumes:
   mongodb_dev_data:
