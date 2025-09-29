@@ -15,7 +15,7 @@ RUN adduser -S nodejs -u 1001
 COPY package*.json ./
 
 # Install all dependencies (including dev dependencies)
-RUN npm ci
+RUN npm i
 
 # Change ownership of the working directory
 RUN chown -R nodejs:nodejs /app
