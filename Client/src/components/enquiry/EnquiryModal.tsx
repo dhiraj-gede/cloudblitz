@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Dialog, DialogContent } from '../ui/dialog.tsx';
 import { EnquiryForm } from './EnquiryForm.tsx';
 import { useToast } from '../../hooks/useToast.ts';
-import type { Enquiry } from '../../types/index.ts';
+import type { Enquiry, EnquiryPayload } from '../../types/index.ts';
 import { createEnquiry, updateEnquiry } from '../../services/api.ts';
 
 interface EnquiryModalProps {
@@ -26,7 +26,7 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
   const isEditing = !!enquiry?.id;
 
   const handleSubmit = async (
-    data: Omit<Enquiry, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>
+    data: Omit<EnquiryPayload, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>
   ) => {
     try {
       setIsSubmitting(true);
@@ -40,10 +40,10 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
       );
       if (isEditing && enquiry?.id) {
         console.log('Submitting enquiry data:', data);
-        await updateEnquiry(enquiry.id, { ...data, assignedTo: data.assignedTo?.id || undefined });
+        await updateEnquiry(enquiry.id, { ...data, assignedTo: data.assignedTo || undefined });
         success(`Enquiry from ${data.customerName} updated successfully`);
       } else {
-        await createEnquiry({ ...data, assignedTo: data.assignedTo?.id || undefined });
+        await createEnquiry({ ...data, assignedTo: data.assignedTo || undefined });
         success(`New enquiry from ${data.customerName} created`);
       }
 

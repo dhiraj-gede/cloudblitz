@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useForm, type FieldError } from 'react-hook-form';
-import type { Enquiry, User } from '../../types/index.ts';
+import type { Enquiry, EnquiryPayload, User } from '../../types/index.ts';
 import { useEffect, useState } from 'react';
 import { fetchUsers } from '../../services/api.ts';
 import { useAuth } from '../../hooks/useAuth.ts';
@@ -17,7 +17,7 @@ import {
 
 interface EnquiryFormProps {
   enquiry?: Partial<Enquiry>;
-  onSubmit: (data: Omit<Enquiry, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>) => void;
+  onSubmit: (data: Omit<EnquiryPayload, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>) => void;
   onCancel: () => void;
   isSubmitting?: boolean;
   canAssign?: boolean;
@@ -38,7 +38,7 @@ export const EnquiryForm: React.FC<EnquiryFormProps> = ({
   const { user: loggedInUser } = useAuth();
 
   useEffect(() => {
-    if (loggedInUser && loggedInUser.role!=='admin') {
+    if (loggedInUser && loggedInUser.role !== 'admin') {
       return;
     }
 
@@ -54,19 +54,14 @@ export const EnquiryForm: React.FC<EnquiryFormProps> = ({
     handleSubmit,
     formState: { errors, isDirty },
     watch,
-  } = useForm<Omit<Enquiry, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>>({
+  } = useForm<Omit<EnquiryPayload, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>>({
     defaultValues: {
       customerName: enquiry?.customerName || loggedInUser?.name || '',
       email: enquiry?.email || loggedInUser?.email || '',
       phone: enquiry?.phone || '',
       message: enquiry?.message || '',
       status: enquiry?.status || 'new',
-      assignedTo: enquiry?.id
-        ? enquiry?.assignedTo ||
-          (loggedInUser
-            ? { id: loggedInUser.id, name: loggedInUser.name, email: loggedInUser.email }
-            : { id: '', name: '', email: '' })
-        : undefined,
+      assignedTo: enquiry?.id ? enquiry?.assignedTo?.id : undefined,
       autoAssign: enquiry?.id ? false : true,
     },
   });
@@ -80,7 +75,7 @@ export const EnquiryForm: React.FC<EnquiryFormProps> = ({
     return undefined;
   };
 
-  type FormData = Omit<Enquiry, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'> & {
+  type FormData = Omit<EnquiryPayload, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'> & {
     autoAssign?: boolean;
   };
 
@@ -95,8 +90,7 @@ export const EnquiryForm: React.FC<EnquiryFormProps> = ({
       console.log('Creating new enquiry with auto-assign2');
       delete data.assignedTo;
       data.autoAssign = true;
-    }
-    else {
+    } else {
       console.log('Creating new enquiry with auto-assign3', data, enquiry.id);
       data.autoAssign = false;
     }
