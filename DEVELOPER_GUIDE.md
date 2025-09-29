@@ -1,3 +1,101 @@
+# CloudBlitz Developer Guide
+
+## Getting Started
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/dhiraj-gede/cloudblitz.git
+   cd cloudblitz
+   ```
+
+2. **Install Dependencies**
+   - Backend:
+     ```bash
+     cd Server
+     npm install
+     ```
+   - Frontend:
+     ```bash
+     cd ../Client
+     npm install
+     ```
+
+3. **Environment Setup**
+   - Copy `.env.example` to `.env` in both `Server` and `Client` folders.
+   - Edit values as needed (see README for details).
+
+4. **Start Development Servers**
+   - Backend:
+     ```bash
+     cd Server
+     npm run dev
+     ```
+   - Frontend:
+     ```bash
+     cd Client
+     npm run dev
+     ```
+   - Access frontend at [http://localhost:5173](http://localhost:5173)
+   - Access backend at [http://localhost:5000](http://localhost:5000)
+   - API docs at [http://localhost:5000/api-docs](http://localhost:5000/api-docs)
+
+## Testing
+
+- **Backend:**
+  ```bash
+  cd Server
+  npm test
+  npm run test:watch
+  npm run test:coverage
+  ```
+- **Frontend:**
+  ```bash
+  cd Client
+  npm run test
+  npm run test:coverage
+  ```
+
+## Linting & Formatting
+- Pre-commit hooks run ESLint and Prettier automatically.
+- Manual lint/format:
+  ```bash
+  npm run lint
+  npm run format
+  ```
+
+## Docker Setup
+- Start all services:
+  ```bash
+  docker-compose up -d
+  ```
+- Stop services:
+  ```bash
+  docker-compose down
+  ```
+
+## Deployment
+- Backend: Deploy Node.js + MongoDB on cloud (AWS, DigitalOcean, etc.)
+- Frontend: Deploy on Vercel, Netlify, or cloud platforms
+- Set environment variables for production
+
+## API Documentation
+- Interactive docs at `/api-docs` (Swagger UI)
+- Update `Server/src/swaggerDef.ts` for schema changes
+
+## Troubleshooting
+- Check `.env` files for correct values
+- Ensure MongoDB is running
+- Review logs in terminal for errors
+
+## Contributing
+1. Fork the repo
+2. Create a feature branch
+3. Make changes, add tests
+4. Commit and push
+5. Submit a pull request
+
+---
+For architecture, see ARCHITECTURE.md. For more, see README.md.
 # 🔧 CloudBlitz Developer Guide
 
 ## 📋 Table of Contents
