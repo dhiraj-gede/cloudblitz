@@ -154,7 +154,7 @@ NODE_ENV=development
 MONGODB_URI=mongodb://localhost:27017/cloudblitz
 JWT_SECRET=your-super-secret-jwt-key
 JWT_EXPIRES_IN=7d
-CORS_ORIGIN=http://localhost:3000
+CORS_ORIGIN=http://localhost:5000
 ```
 
 #### Frontend Environment (.env)
@@ -183,8 +183,9 @@ cd Client
 npm run dev
 ```
 
+
 The application will be available at:
-- **Frontend**: http://localhost:3000
+- **Frontend**: http://localhost:5173
 - **Backend**: http://localhost:5000
 - **API Health Check**: http://localhost:5000/api/health
 
@@ -218,25 +219,55 @@ git push origin feature/enquiry-management
 # Create pull request to develop branch
 ```
 
-## 📚 API Documentation
 
-### Authentication Endpoints
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login
-- `GET /api/auth/me` - Get current user
+## 📚 API Documentation & Swagger Setup
 
-### Enquiry Endpoints
-- `GET /api/enquiries` - Get all enquiries (with filters)
-- `POST /api/enquiries` - Create new enquiry
-- `GET /api/enquiries/:id` - Get enquiry by ID
-- `PUT /api/enquiries/:id` - Update enquiry
-- `DELETE /api/enquiries/:id` - Soft delete enquiry
+The backend includes interactive API documentation powered by **Swagger UI**.
 
-### User Endpoints (Admin Only)
-- `GET /api/users` - Get all users
-- `POST /api/users` - Create new user
-- `PUT /api/users/:id` - Update user
-- `DELETE /api/users/:id` - Delete user
+### Accessing API Docs
+- Visit [`http://localhost:5000/api-docs`](http://localhost:5000/api-docs) after starting the backend server.
+- All endpoints, request/response models, and authentication requirements are documented.
+
+### API Endpoints Overview
+
+#### Authentication Endpoints
+- `POST /api/auth/register` — User registration
+- `POST /api/auth/login` — User login
+- `POST /api/auth/refresh` — Refresh JWT token
+- `GET /api/auth/me` — Get current user
+- `POST /api/auth/change-password` — Change password
+- `POST /api/auth/logout` — Logout
+
+#### Enquiry Endpoints
+- `GET /api/enquiries` — Get all enquiries (with filters)
+- `POST /api/enquiries` — Create new enquiry
+- `GET /api/enquiries/:id` — Get enquiry by ID
+- `PUT /api/enquiries/:id` — Update enquiry
+- `PUT /api/enquiries/:id/assign` — Assign enquiry to user (admin/staff)
+- `DELETE /api/enquiries/:id` — Soft delete enquiry
+
+#### User Endpoints (Admin Only)
+- `GET /api/users` — Get all users
+- `POST /api/users` — Create new user
+- `GET /api/users/:id` — Get user by ID
+- `PUT /api/users/:id` — Update user
+- `DELETE /api/users/:id` — Delete user
+
+### How to Enable/Customize Swagger
+1. **Environment Variable:**
+	- Set `SWAGGER_SERVER_URL` in your `.env` file to customize the server URL shown in docs.
+2. **Edit Schemas:**
+	- Update `Server/src/swaggerDef.ts` to add or modify request/response models.
+3. **Add Route Docs:**
+	- Use JSDoc comments with `@swagger` in route files for endpoint documentation.
+
+### Example Setup
+```bash
+# Start backend server
+cd Server
+npm run dev
+# Open http://localhost:5000/api-docs in your browser
+```
 
 ## 🐳 Docker Setup
 
