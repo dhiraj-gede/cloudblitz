@@ -88,13 +88,16 @@ export const EnquiryForm: React.FC<EnquiryFormProps> = ({
     // For new enquiry, always use autoAssign and no assignedTo
     console.log('Form Data before submit:', data);
     if (!enquiry?.id) {
+      console.log('Creating new enquiry with auto-assign');
       delete data.assignedTo;
       data.autoAssign = true;
     } else if (autoAssign) {
+      console.log('Creating new enquiry with auto-assign2');
       delete data.assignedTo;
       data.autoAssign = true;
     }
     else {
+      console.log('Creating new enquiry with auto-assign3');
       data.autoAssign = false;
     }
     onSubmit(data);
