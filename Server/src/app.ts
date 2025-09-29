@@ -11,6 +11,7 @@ import * as fs from 'fs';
 import authRoutes from './routes/auth.routes';
 import enquiryRoutes from './routes/enquiry.routes';
 import userRoutes from './routes/user.routes';
+import { OpenAPIV3 } from 'openapi-types';
 
 // Load environment variables based on NODE_ENV
 const envFile = process.env.NODE_ENV === 'test' ? '.env.test' : '.env';
@@ -41,15 +42,112 @@ const corsOptions = {
 
 // Basic middleware
 app.use(cors(corsOptions));
-// Swagger setup (dynamic server URL)
-const swaggerOptions = {
-  definition: swaggerDefinition,
-  apis: ['./src/routes/*.ts', './src/controllers/*.ts'], // Path to the API docs
-};
-const swaggerSpec = swaggerJsdoc(swaggerOptions);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+let swaggerSpec: OpenAPIV3.Document & {
+  servers?: Array<{
+    url: string;
+    description?: string;
+  }>;
+};
+const isProduction =
+  process.env.NODE_ENV === 'production' || process.env.DOCKER === 'true';
+
+console.log(
+  `🌍 Environment detected: ${isProduction ? 'Production/Docker' : 'Development'}`
+);
+
+if (isProduction) {
+  // Serve static swagger.json in production/Docker
+  const staticSwaggerPath = path.resolve(__dirname, 'swagger.json');
+  console.log(`📁 Looking for static Swagger at: ${staticSwaggerPath}`);
+
+  if (fs.existsSync(staticSwaggerPath)) {
+    swaggerSpec = JSON.parse(fs.readFileSync(staticSwaggerPath, 'utf-8'));
+    console.log('✅ Serving static Swagger spec');
+  } else {
+    console.warn('❌ Static swagger.json not found, generating dynamically...');
+
+    // Fallback: generate dynamically from compiled JS files
+    try {
+      const swaggerOptions = {
+        definition: swaggerDefinition,
+        apis: [
+          './dist/routes/*.js',
+          './dist/controllers/*.js',
+          './dist/controllers/**/*.js',
+        ],
+      };
+      swaggerSpec = swaggerJsdoc(swaggerOptions) as OpenAPIV3.Document;
+      console.log(
+        `✅ Generated dynamic Swagger with ${Object.keys((swaggerSpec as OpenAPIV3.Document).paths || {}).length} paths`
+      );
+    } catch (error) {
+      console.error('❌ Failed to generate Swagger spec:', error);
+      // Create minimal valid Swagger spec as fallback
+      swaggerSpec = {
+        openapi: '3.0.0',
+        info: {
+          title: 'CloudBlitz API',
+          version: '1.0.0',
+        },
+        servers: [{ url: '/', description: 'Current Server' }],
+        paths: {},
+      };
+    }
+  }
+} else {
+  // Development: always generate dynamically from TypeScript files
+  try {
+    const swaggerOptions = {
+      definition: swaggerDefinition,
+      apis: [
+        './src/routes/*.ts',
+        './src/controllers/*.ts',
+        './src/controllers/**/*.ts',
+      ],
+    };
+    swaggerSpec = swaggerJsdoc(swaggerOptions) as OpenAPIV3.Document;
+    console.log(
+      `✅ Generated development Swagger with ${Object.keys((swaggerSpec as OpenAPIV3.Document).paths || {}).length} paths`
+    );
+  } catch (error) {
+    console.error('❌ Failed to generate development Swagger spec:', error);
+    swaggerSpec = {
+      openapi: '3.0.0',
+      info: {
+        title: 'CloudBlitz API',
+        version: '1.0.0',
+      },
+      servers: [{ url: '/', description: 'Current Server' }],
+      paths: {},
+    };
+  }
+}
+
+// Debug: Log Swagger servers configuration
+console.log('🔗 Swagger servers configured:');
+if (swaggerSpec.servers && Array.isArray(swaggerSpec.servers)) {
+  swaggerSpec.servers.forEach(
+    (server: OpenAPIV3.ServerObject, index: number) => {
+      console.log(
+        `  ${index + 1}. ${server.url} (${server.description || 'no description'})`
+      );
+    }
+  );
+} else {
+  console.log('  No servers configured, adding default...');
+  swaggerSpec.servers = [{ url: '/', description: 'Current Server' }];
+}
+
+// Add explicit Swagger JSON endpoint for debugging
+app.get('/api-docs/json', (req: Request, res: Response) => {
+  res.json(swaggerSpec);
+});
+
+// Setup Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // API request logging middleware
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -65,8 +163,6 @@ if (process.env.NODE_ENV !== 'test') {
   console.log('🧪 Running with minimal security for testing');
 }
 
-// Import routes
-
 // API root endpoint
 app.get('/api', (req: Request, res: Response) => {
   res.status(200).json({
@@ -77,9 +173,12 @@ app.get('/api', (req: Request, res: Response) => {
       auth: '/api/auth',
       enquiries: '/api/enquiries',
       users: '/api/users',
+      swagger: '/api-docs',
+      swaggerJson: '/api-docs/json',
     },
   });
 });
+
 // Health check endpoint
 app.get('/api/health', (req: Request, res: Response) => {
   res.status(200).json({
@@ -87,6 +186,7 @@ app.get('/api/health', (req: Request, res: Response) => {
     message: 'CloudBlitz API is running',
     timestamp: new Date().toISOString(),
     version: '1.0.0',
+    environment: process.env.NODE_ENV,
   });
 });
 
@@ -101,6 +201,9 @@ if (process.env.NODE_ENV === 'test') {
   app.use('/api/enquiries', authRateLimit, enquiryRoutes);
   app.use('/api/users', authRateLimit, userRoutes);
 }
+
+console.log('📚 Swagger docs available at /api-docs');
+console.log('📄 Swagger JSON available at /api-docs/json');
 
 // Swagger UI endpoint info
 console.log('📚 Swagger docs available at /api-docs');
