@@ -22,6 +22,9 @@ FROM node:20-alpine AS production
 # Install dumb-init for proper signal handling
 RUN apk add --no-cache dumb-init
 
+# Install curl for healthcheck
+RUN apk add --no-cache curl
+
 # Create app user
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nodejs -u 1001
