@@ -96,6 +96,7 @@ export const updateEnquiry = async (
   id: string,
   data: Partial<EnquiryPayload>
 ): Promise<Enquiry> => {
+  console.log('Updating enquiry data:', data);
   return api.put<ApiResponse<Enquiry>>(`/enquiries/${id}`, data).then((res) => res.data!);
 };
 

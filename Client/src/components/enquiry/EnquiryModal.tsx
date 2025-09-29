@@ -30,8 +30,8 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
   ) => {
     try {
       setIsSubmitting(true);
-
       if (isEditing && enquiry?.id) {
+        console.log('Submitting enquiry data:', data);
         await updateEnquiry(enquiry.id, { ...data, assignedTo: data.assignedTo?.id || undefined });
         success(`Enquiry from ${data.customerName} updated successfully`);
       } else {
