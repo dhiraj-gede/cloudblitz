@@ -1,4 +1,7 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
+import swaggerUi from 'swagger-ui-express';
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerDefinition from './swaggerDef';
 import cors from 'cors';
 import * as dotenv from 'dotenv';
 import mongoose from 'mongoose';
@@ -38,6 +41,13 @@ const corsOptions = {
 
 // Basic middleware
 app.use(cors(corsOptions));
+// Swagger setup (dynamic server URL)
+const swaggerOptions = {
+  definition: swaggerDefinition,
+  apis: ['./src/routes/*.ts', './src/controllers/*.ts'], // Path to the API docs
+};
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -91,6 +101,9 @@ if (process.env.NODE_ENV === 'test') {
   app.use('/api/enquiries', authRateLimit, enquiryRoutes);
   app.use('/api/users', authRateLimit, userRoutes);
 }
+
+// Swagger UI endpoint info
+console.log('📚 Swagger docs available at /api-docs');
 
 // 404 handler - removed for now due to Express routing issue
 
