@@ -12,7 +12,7 @@ const swaggerDefinition = {
     {
       url:
         process.env.SWAGGER_SERVER_URL ||
-        `http://localhost:${process.env.PORT || 3000}/api`,
+        `https://bcdf5c3739e4.ngrok-free.app/api`,
     },
   ],
   components: {
