@@ -17,7 +17,7 @@ export const api = {
     const url = `${API_BASE_URL}${endpoint}`;
 
     const response = await fetch(url, {
-      headers: this.getAuthHeaders(),
+      headers: {...this.getAuthHeaders(), 'ngrok-skip-browser-warning': 'true'},
       ...options,
     });
 
