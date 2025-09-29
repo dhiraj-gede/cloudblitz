@@ -21,8 +21,24 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegis
   const { login } = useAuth();
   const handleChange = (field: keyof typeof credentials) => (value: string) =>
     setCredentials((prev) => ({ ...prev, [field]: value }));
+
+  // Simple email validation
+  const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const emailError =
+    credentials.email.length === 0
+      ? 'Email is required.'
+      : !isValidEmail(credentials.email)
+        ? 'Please enter a valid email address.'
+        : '';
+  const passwordError = credentials.password.length === 0 ? 'Password is required.' : '';
+  const isFormValid = !emailError && !passwordError;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isFormValid) {
+      setError('Please enter a valid email and password.');
+      return;
+    }
     setError(null);
     setIsSubmitting(true);
     try {
@@ -36,53 +52,63 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToRegis
   };
   return (
     <AuthCard>
-      {' '}
       <AuthCardHeader
         icon={<User className='w-5 h-5' />}
         title='Welcome Back'
         subtitle='Sign in to your account'
-      />{' '}
+      />
       <form className='space-y-4' onSubmit={handleSubmit} noValidate>
-        {' '}
-        {error && <ErrorAlert message={error} />}{' '}
-        <InputField
-          id='email'
-          label='Email'
-          type='email'
-          value={credentials.email}
-          onChange={handleChange('email')}
-          placeholder='Enter your email'
-          required
-          disabled={isSubmitting}
-          icon={<Mail className='w-4 h-4' />}
-        />{' '}
-        <PasswordInput
-          id='password'
-          label='Password'
-          value={credentials.password}
-          onChange={handleChange('password')}
-          placeholder='Enter your password'
-          required
-          disabled={isSubmitting}
-        />{' '}
+        {error && <ErrorAlert message={error} />}
+        <div className='space-y-1'>
+          <InputField
+            id='email'
+            label='Email'
+            type='email'
+            value={credentials.email}
+            onChange={handleChange('email')}
+            placeholder='Enter your email'
+            required
+            disabled={isSubmitting}
+            icon={<Mail className='w-4 h-4' />}
+            error={emailError || undefined}
+          />
+          {emailError && (
+            <div className='text-xs text-warning-foreground mt-1 ml-1'>{emailError}</div>
+          )}
+        </div>
+        <div className='space-y-1'>
+          <PasswordInput
+            id='password'
+            label='Password'
+            value={credentials.password}
+            onChange={handleChange('password')}
+            placeholder='Enter your password'
+            required
+            disabled={isSubmitting}
+            error={passwordError || undefined}
+          />
+          {passwordError && (
+            <div className='text-xs text-warning-foreground mt-1 ml-1'>{passwordError}</div>
+          )}
+        </div>
         <LoadingButton
           isLoading={isSubmitting}
           type='submit'
           onClick={() => {}}
           loadingText='Signing in...'
           className='w-full'
+          disabled={!isFormValid || isSubmitting}
         >
-          {' '}
-          Sign In{' '}
-        </LoadingButton>{' '}
-      </form>{' '}
+          Sign In
+        </LoadingButton>
+      </form>
       {onSwitchToRegister && (
         <SwitchAuthMode
           text="Don't have an account?"
           linkText='Sign up'
           onClick={onSwitchToRegister}
         />
-      )}{' '}
+      )}
     </AuthCard>
   );
 };

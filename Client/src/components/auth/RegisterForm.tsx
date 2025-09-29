@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { UserPlus, User, Mail, Lock, CheckCircle } from 'lucide-react';
+import { UserPlus, User, Mail, Lock, CheckCircle, AlertCircle, Info } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.ts';
 import { AuthCard } from '../ui/AuthCard.tsx';
 import { AuthCardHeader } from '../ui/AuthCardHeader.tsx';
@@ -21,6 +21,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchT
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [showValidationTooltip, setShowValidationTooltip] = useState(false);
 
   const { register } = useAuth();
 
@@ -33,22 +35,70 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchT
     hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password),
   };
 
+  // Simple email validation
+  const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const isEmailValid = isValidEmail(email);
+  const isNameValid = name.trim().length > 0;
+  const isPasswordValid =
+    passwordStrength.hasMinLength &&
+    passwordStrength.hasUpperCase &&
+    passwordStrength.hasLowerCase &&
+    passwordStrength.hasNumbers &&
+    passwordStrength.hasSpecialChar;
+  const isConfirmPasswordValid = password === confirmPassword && confirmPassword.length > 0;
+
+  const isFormValid =
+    isNameValid && isEmailValid && isPasswordValid && isConfirmPasswordValid && termsAccepted;
+
+  // Get validation errors for tooltip
+  const getValidationErrors = () => {
+    const errors: string[] = [];
+
+    if (!isNameValid) {
+      errors.push('• Full name is required');
+    }
+
+    if (!isEmailValid && email.length > 0) {
+      errors.push('• Please enter a valid email address');
+    } else if (!isEmailValid) {
+      errors.push('• Email address is required');
+    }
+
+    if (!isPasswordValid && password.length > 0) {
+      errors.push('• Password does not meet all requirements');
+    } else if (!isPasswordValid) {
+      errors.push('• Password is required');
+    }
+
+    if (!isConfirmPasswordValid && confirmPassword.length > 0) {
+      errors.push('• Passwords do not match');
+    } else if (!isConfirmPasswordValid) {
+      errors.push('• Please confirm your password');
+    }
+
+    if (!termsAccepted) {
+      errors.push('• You must accept the Terms and Privacy Policy');
+    }
+
+    return errors;
+  };
+
+  const validationErrors = getValidationErrors();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+    if (!isFormValid) {
+      setShowValidationTooltip(true);
+      // Hide tooltip after 5 seconds
+      setTimeout(() => setShowValidationTooltip(false), 5000);
+      setError('Please fix the form errors to continue');
       return;
     }
 
     setIsSubmitting(true);
-
     try {
       await register(name, email, password);
       onSuccess?.();
@@ -82,6 +132,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchT
             disabled={isSubmitting}
             icon={<User className='w-4 h-4' />}
             className='bg-background/50 border-border/70 focus:border-primary/50'
+            error={!isNameValid && name.length > 0 ? 'Full name is required' : undefined}
           />
 
           <InputField
@@ -95,6 +146,9 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchT
             disabled={isSubmitting}
             icon={<Mail className='w-4 h-4' />}
             className='bg-background/50 border-border/70 focus:border-primary/50'
+            error={
+              !isEmailValid && email.length > 0 ? 'Please enter a valid email address' : undefined
+            }
           />
 
           <PasswordInput
@@ -157,7 +211,9 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchT
             icon={<Lock className='w-4 h-4' />}
             className='bg-background/50 border-border/70 focus:border-primary/50'
             error={
-              confirmPassword && password !== confirmPassword ? 'Passwords do not match' : undefined
+              !isConfirmPasswordValid && confirmPassword.length > 0
+                ? 'Passwords do not match'
+                : undefined
             }
           />
         </div>
@@ -170,6 +226,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchT
               type='checkbox'
               required
               disabled={isSubmitting}
+              checked={termsAccepted}
+              onChange={(e) => setTermsAccepted(e.target.checked)}
               className='w-4 h-4 text-primary bg-background border-border rounded focus:ring-primary/50 focus:ring-2'
             />
           </div>
@@ -191,15 +249,45 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchT
           </label>
         </div>
 
-        <LoadingButton
-          isLoading={isSubmitting}
-          type='submit'
-          onClick={() => {}}
-          loadingText='Creating your account...'
-          className='w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 rounded-lg font-medium shadow-sm smooth-transition focus-ring'
-        >
-          Create Account
-        </LoadingButton>
+        {/* Validation Tooltip */}
+        {showValidationTooltip && validationErrors.length > 0 && (
+          <div className='p-3 bg-destructive/10 border border-destructive/20 rounded-lg'>
+            <div className='flex items-center gap-2 mb-2'>
+              <AlertCircle className='w-4 h-4 text-destructive' />
+              <span className='text-sm font-medium text-destructive'>Form Validation Errors</span>
+            </div>
+            <ul className='text-xs text-destructive space-y-1'>
+              {validationErrors.map((error, index) => (
+                <li key={index}>{error}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <div className='relative'>
+          <LoadingButton
+            isLoading={isSubmitting}
+            type='submit'
+            onClick={() => {}}
+            loadingText='Creating your account...'
+            className='w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 rounded-lg font-medium shadow-sm smooth-transition focus-ring'
+            disabled={!isFormValid || isSubmitting}
+          >
+            Sign Up
+          </LoadingButton>
+
+          {/* Tooltip trigger */}
+          {!isFormValid && !isSubmitting && (
+            <button
+              type='button'
+              onClick={() => setShowValidationTooltip(!showValidationTooltip)}
+              className='absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground smooth-transition'
+              title='Show validation errors'
+            >
+              <Info className='w-4 h-4' />
+            </button>
+          )}
+        </div>
       </form>
 
       {onSwitchToLogin && (
