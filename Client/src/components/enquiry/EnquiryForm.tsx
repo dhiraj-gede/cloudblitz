@@ -97,7 +97,7 @@ export const EnquiryForm: React.FC<EnquiryFormProps> = ({
       data.autoAssign = true;
     }
     else {
-      console.log('Creating new enquiry with auto-assign3');
+      console.log('Creating new enquiry with auto-assign3', data, enquiry.id);
       data.autoAssign = false;
     }
     onSubmit(data);
